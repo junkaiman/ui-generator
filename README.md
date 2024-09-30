@@ -1,4 +1,7 @@
 # 📐InstaUI: The Ultimate UI Generator in Seconds
+[![Daily Merge Dev to Main](https://github.com/junkaiman/ui-generator/actions/workflows/merge-dev-to-main.yml/badge.svg)](https://github.com/junkaiman/ui-generator/actions/workflows/merge-dev-to-main.yml)
+
+
 This repo is for the group project of CSCI 2340 - Software Engineering @Brown University
 
 A super cool project that utilizes LLM✨ to generate code for UI components! 
