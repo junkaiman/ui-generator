@@ -47,7 +47,7 @@ Please adhere to this branch structure for a smooth and organized workflow.
      ```
 
 #### 5. **Submit a Pull Request (PR) to `dev` Branch**
-   - Once you're done, submit a pull request (PR) from your branch to the **`dev`** branch. ⚠️ Notice it's `dev`, not `main`.
+   - Once you're done, submit a [pull request (PR)](https://github.com/junkaiman/ui-generator/compare/dev...my-branch?quick_pull=1) from your branch to the **`dev`** branch. ⚠️ Notice it's `dev`, not `main`.
    - Ensure your PR includes:
      - A clear title and description of the changes. 📝
      - Confirmation that all tests pass. ✅
