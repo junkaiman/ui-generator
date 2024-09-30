@@ -4,14 +4,19 @@ on:
   schedule:
     - cron: '0 0 * * *' # Runs every day at midnight UTC
 
+permissions:
+  contents: write
+
 jobs:
   merge:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          ref: 'dev'
+          ssh-key: ${{ secrets.DEPLOY_KEY }}
 
       - name: Set up Git
         run: |
@@ -21,8 +26,8 @@ jobs:
       - name: Merge dev into main
         run: |
           git checkout main
-          git pull origin main
-          git merge dev
-          git push origin main
+          git pull
+          git merge origin/dev
+          git push
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
