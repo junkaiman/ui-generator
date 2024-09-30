@@ -6,6 +6,7 @@ This repo is for the group project of CSCI 2340 - Software Engineering @Brown Un
 
 A super cool project that utilizes LLM✨ to generate code for UI components! 
 
+---------
 ### Contributor Guidelines
 👋 **Welcome!** Please follow these guidelines to contribute directly to the repository and ensure smooth collaboration.
 
