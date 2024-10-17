@@ -33,10 +33,9 @@ jobs:
         working-directory: ${{ env.FRONTEND_PATH }}
         run: npm run lint
 
-      # Comment out to save time
-      # - name: Verify build
-      #   working-directory: ${{ env.FRONTEND_PATH }}
-      #   run: npm run build
+      - name: Verify build
+        working-directory: ${{ env.FRONTEND_PATH }}
+        run: npm run build
 
       - name: Run tests
         working-directory: ${{ env.FRONTEND_PATH }}
