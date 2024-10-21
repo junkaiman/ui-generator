@@ -20,7 +20,7 @@
 
 # Code Structure
 
-```
+```python
 class LLMService:
     def __init__(self, api_key: str, max_attempts: int = 10):
         self.api_key = api_key
