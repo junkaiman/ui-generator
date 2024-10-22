@@ -47,8 +47,7 @@ We've decided to use IndexedDB and its wrapper class Dexie.js to store historica
     - A Promise<Chat | undefined> that resolves to the chat object if found, otherwise undefined.
 
 **deleteChatById(id: string): Promise\<void>**
-- Description: Deletes a chat entry by its id._
-
+- Description: Deletes a chat entry by its id.
 - Parameters:
     - id: The unique id of the chat.
 - Returns:
@@ -56,12 +55,10 @@ We've decided to use IndexedDB and its wrapper class Dexie.js to store historica
 
 **getChats(): Promise\<Chat[]>**
 - Descriptions: Retrieves all chat entries from the database.
-
 - Returns: A Promise<Chat[]> that resolves to an array of all chat objects.
 
 **clearChats(): Promise\<void>**
 - Descriptions: Clears all chat entries from the database.
-
 - Returns: A Promise<void> that resolves once all chat entries are cleared.
 
 
