@@ -63,4 +63,38 @@ We've decided to use IndexedDB and its wrapper class Dexie.js to store historica
 
 
 ### UI Components
-TODO: Side Bar, Main Interface, Input Bar, etc.
+- SideBar: A component that displays a list of chat items in the sidebar.
+
+- SideBarItem: A component that represents a single chat item in the sidebar.
+    - Props: 
+        - chatId: The id of the currently selected chat.
+        - onChatSelect: A callback function to handle the selection of a chat item.
+        - onChatDelete: A callback function to handle the deletion of a chat item.
+
+- ChatInterface: A component that displays the chat messages in the main interface.
+    - Props:
+        - chatId: The id of the currently selected chat.
+
+- MessageList: A component that displays a list of messages in the chat interface.
+    - Props:
+        - messages: An array of Message objects to be displayed.
+
+- MessageItem: A component that represents a single message in the message list.
+    - Props:
+        - message: The Message object to be displayed.
+        - onModify: A callback function to handle the modification of a message.
+        - onRegenerate: A callback function to handle the regeneration of a message.
+
+- CodeBlock: A component that displays code snippets in a formatted way.
+    - Props:
+        - code: The code snippet to be displayed.
+
+- InputBar: A component that allows users to input new messages.
+    - Props: 
+        - onMessageSend: A callback function to handle the submission of a new message.
+        - onImageUpload: A callback function to handle the upload of an image.
+
+
+
+
+
