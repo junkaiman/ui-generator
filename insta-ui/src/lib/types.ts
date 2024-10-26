@@ -31,4 +31,4 @@ interface Chat {
   lastModified: Date;
 }
 
-export type { Messages, Chat };
+export type { Message, Messages, Chat, TextContent, ImageContent };
