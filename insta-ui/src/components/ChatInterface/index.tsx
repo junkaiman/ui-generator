@@ -6,7 +6,7 @@ import { addChat, getChats, clearChats } from "@/lib/db";
 import { Chat, Messages } from "@/lib/types";
 import { useState, useEffect } from "react";
 
-export default function Conversation() {
+export default function ChatInterface() {
   const testAddChat = async () => {
     console.log("[Testing addChat]");
     const messages: Messages = [
