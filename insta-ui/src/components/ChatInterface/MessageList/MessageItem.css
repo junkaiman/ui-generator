@@ -1,0 +1,63 @@
+.message-item {
+    display: flex;
+    margin-bottom: 1rem;
+    justify-content: flex-start; /* Default to assistant message alignment */
+  }
+  
+  .message-container {
+    padding: 1rem;
+    max-width: 70%; /* Maximum width for the message */
+    border-radius: 0.5rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .message-content {
+    margin-bottom: 0.5rem;
+  }
+  
+  .message-actions {
+    font-size: 0.75rem;
+    display: flex;
+    gap: 0.5rem;
+    color: #60a5fa; /* Tailwind's text-blue-200 */
+    transition: color 0.2s ease;
+  }
+  
+  .message-actions:hover {
+    color: #3b82f6; /* Tailwind's hover:text-blue-400 */
+  }
+  
+  .button-modify,
+  .button-regenerate {
+    transition: box-shadow 0.2s ease;
+  }
+  
+  .button-modify:hover,
+  .button-regenerate:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Shadow effect on hover */
+  }
+  
+  /* Styles for user and assistant roles */
+  .user {
+    justify-content: flex-end; /* Align user messages to the right */
+  }
+  
+  .assistant {
+    justify-content: flex-start; /* Align assistant messages to the left */
+  }
+  
+  /* Apply blue background only to user messages */
+  .user .message-container {
+    background-color: #3b82f6; /* Tailwind's bg-blue-500 */
+    color: white; /* Text color for user messages */
+  }
+  
+  /* Apply gray background only to assistant messages */
+  .assistant .message-container {
+    background-color: #f3f4f6; /* Tailwind's bg-gray-100 */
+    color: #1f2937; /* Tailwind's text-gray-800 */
+    /* Adjust margins for alignment */
+    margin-right: auto; /* Center the assistant message */
+  }
+  
+  

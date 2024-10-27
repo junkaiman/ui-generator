@@ -1,71 +1,66 @@
 "use client";
-import { Textarea } from "../ui/textarea";
-import { Label } from "../ui/label";
-import { Button } from "../ui/button";
-import { addChat, getChats, clearChats } from "@/lib/db";
-import { Chat, Messages } from "@/lib/types";
-import { useState, useEffect } from "react";
+import { Message } from "../../lib/types";
+import { useState } from "react";
+import MessageList from "./MessageList";
+import InputBar from "./InputBar";
 
 export default function ChatInterface() {
-  const testAddChat = async () => {
-    console.log("[Testing addChat]");
-    const messages: Messages = [
-      {
-        role: "user",
-        content: "Hello",
-      },
-      {
-        role: "assistant",
-        content: "Hi, how can I help you?",
-      },
-    ];
+  const [messages, setMessages] = useState<Message[]>([
+    {
+      role: "user",
+      content: "Give me an image of a cat.",
+    },
+    {
+      role: "assistant",
+      content: [
+        { type: "text", text: "Here is an image as requested." },
+        { type: "image", image_url: "https://example.com/image.jpg" },
+      ],
+    },
+    {
+      role: "user",
+      content: "Thanks",
+    },
+    {
+      role: "user",
+      content: "Great",
+    },
+  ]);
 
-    const res = await addChat(messages);
-    console.log("Chat added", res);
+  const handleModify = (message: Message) => {
+    console.log("Modify message");
   };
 
-  const testClearChats = async () => {
-    console.log("[Testing clearChats]");
-    const res = await clearChats();
-    console.log("Chats cleared", res);
+  const handleRegenerate = (message: Message) => {
+    console.log("Regenerate message");
   };
 
-  const useChats = () => {
-    const [chats, setChats] = useState<Chat[]>([]);
-    useEffect(() => {
-      getChats().then((res) => {
-        setChats(res);
-      });
-    }, [chats]);
-    return chats;
+  const handleSendMessage = (content: string) => {
+    const newMessage: Message = {
+      role: "user",
+      content: content,
+    };
+    setMessages((prevMessages) => [...prevMessages, newMessage]);
   };
 
-  const chats = useChats();
+  const handleImageUpload = (imageFile: File) => {
+    // TODO: Implement image upload handling here
+    console.log("Uploaded an image.");
+  };
 
   return (
-    <div className="p-2">
-      <div className="p-2 h-[calc(100vh-212px)] border rounded-lg text-center">
-        <div>
-          <Button onClick={testAddChat}>addChat</Button>
-          <Button onClick={testClearChats}>clearChat</Button>
-        </div>
-        <div>
-          <Label>Chats</Label>
-          {chats.map((chat: Chat) => (
-            <div key={chat.id} className="p-2 border rounded-lg">
-              <div>{chat.description}</div>
-              <div>{chat.lastModified.toISOString()}</div>
-            </div>
-          ))}
-        </div>
-      </div>
-      <div>
-        <Label>Your message</Label>
-        <Textarea placeholder="Type your message here." id="message" />
-        <div className="p-2 flex justify-end">
-          <Button size="sm">Send</Button>
-        </div>
-      </div>
+    <div>
+      <h1>Message List Test</h1>
+      <MessageList
+        messages={messages}
+        onModify={handleModify}
+        onRegenerate={handleRegenerate}
+      />
+
+      <InputBar
+        onMessageSend={handleSendMessage}
+        onImageUpload={handleImageUpload}
+      />
     </div>
   );
 }
