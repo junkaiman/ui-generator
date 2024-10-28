@@ -1,8 +1,9 @@
 "use client";
 import { Message } from "../../lib/types";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import MessageList from "./MessageList";
 import InputBar from "./InputBar";
+import "./ChatInterface.css";
 
 export default function ChatInterface() {
   const [messages, setMessages] = useState<Message[]>([
@@ -27,6 +28,8 @@ export default function ChatInterface() {
     },
   ]);
 
+  const messageListRef = useRef<HTMLDivElement>(null);
+
   const handleModify = (message: Message) => {
     console.log("Modify message");
   };
@@ -49,18 +52,24 @@ export default function ChatInterface() {
   };
 
   return (
-    <div>
-      <h1>Message List Test</h1>
-      <MessageList
-        messages={messages}
-        onModify={handleModify}
-        onRegenerate={handleRegenerate}
-      />
+    <div className="chat-interface h-screen overflow-hidden">
+      <div
+        ref={messageListRef}
+        className="message-list relative h-[calc(100vh-4rem)] overflow-y-auto"
+      >
+        <MessageList
+          messages={messages}
+          onModify={handleModify}
+          onRegenerate={handleRegenerate}
+        />
+      </div>
 
-      <InputBar
-        onMessageSend={handleSendMessage}
-        onImageUpload={handleImageUpload}
-      />
+      <div className="sticky bottom-0">
+        <InputBar
+          onMessageSend={handleSendMessage}
+          onImageUpload={handleImageUpload}
+        />
+      </div>
     </div>
   );
 }

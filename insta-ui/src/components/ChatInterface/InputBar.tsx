@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-
+import { AiOutlinePaperClip, AiOutlineSend } from "react-icons/ai";
 interface InputBarProps {
   onMessageSend: (message: string) => void;
   onImageUpload: (imageFile: File) => void;
@@ -27,25 +27,30 @@ const InputBar: React.FC<InputBarProps> = ({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex items-center p-4 bg-gray-100">
+    <form
+      onSubmit={handleSubmit}
+      className="flex items-center p-4 bg-gray-100 rounded-lg shadow-md"
+    >
+      <label className="cursor-pointer mr-2">
+        <AiOutlinePaperClip size={24} className="text-gray-600" />
+        <input
+          type="file"
+          accept="image/*"
+          onChange={handleImageUpload}
+          className="hidden"
+        />
+      </label>
+
       <input
         type="text"
         value={inputValue}
         onChange={(e) => setInputValue(e.target.value)}
         placeholder="Type your message..."
-        className="flex-1 border rounded-lg p-2 mr-2"
+        className="flex-1 border rounded-lg p-2"
       />
-      <input
-        type="file"
-        accept="image/*"
-        onChange={handleImageUpload}
-        className="mr-2"
-      />
-      <button
-        type="submit"
-        className="bg-blue-500 text-white rounded-lg px-4 py-2"
-      >
-        Send
+
+      <button type="submit" className="ml-2">
+        <AiOutlineSend size={24} className="text-blue-500" />
       </button>
     </form>
   );

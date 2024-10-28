@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import MessageItem from "./MessageItem";
-import { Message } from "../../../lib/types";
+import { Message } from "../../lib/types";
+import "./ChatInterface.css";
 
 interface MessageListProps {
   messages: Message[];
@@ -21,7 +22,7 @@ const MessageList: React.FC<MessageListProps> = ({
   }, [messages]);
 
   return (
-    <div className="flex flex-col space-y-4 p-4 bg-white rounded-lg shadow-md max-h-[500px] overflow-y-auto">
+    <div className="message-list-container">
       {messages.map((message, index) => (
         <MessageItem
           key={index}

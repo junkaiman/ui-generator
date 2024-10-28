@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { Message, TextContent, ImageContent } from "../../../lib/types";
-import "./MessageItem.css"; // Import the CSS file
+import { Message, TextContent, ImageContent } from "../../lib/types";
+import "./ChatInterface.css"; // Import the CSS file
 
 interface MessageItemProps {
   message: Message;
