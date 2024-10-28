@@ -28,8 +28,6 @@ export default function ChatInterface() {
     },
   ]);
 
-  const messageListRef = useRef<HTMLDivElement>(null);
-
   const handleModify = (message: Message) => {
     console.log("Modify message");
   };
@@ -53,23 +51,16 @@ export default function ChatInterface() {
 
   return (
     <div className="chat-interface h-screen overflow-hidden">
-      <div
-        ref={messageListRef}
-        className="message-list relative h-[calc(100vh-4rem)] overflow-y-auto"
-      >
-        <MessageList
-          messages={messages}
-          onModify={handleModify}
-          onRegenerate={handleRegenerate}
-        />
-      </div>
+      <MessageList
+        messages={messages}
+        onModify={handleModify}
+        onRegenerate={handleRegenerate}
+      />
 
-      <div className="sticky bottom-0">
-        <InputBar
-          onMessageSend={handleSendMessage}
-          onImageUpload={handleImageUpload}
-        />
-      </div>
+      <InputBar
+        onMessageSend={handleSendMessage}
+        onImageUpload={handleImageUpload}
+      />
     </div>
   );
 }

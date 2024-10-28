@@ -31,7 +31,6 @@ const MessageList: React.FC<MessageListProps> = ({
           onRegenerate={onRegenerate}
         />
       ))}
-
       <div ref={messageEndRef} />
     </div>
   );

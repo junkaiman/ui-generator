@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Message, TextContent, ImageContent } from "../../lib/types";
-import "./ChatInterface.css"; // Import the CSS file
+import "./ChatInterface.css";
+import aiavatar from "../../assets/AI-avatar.jpg";
 
 interface MessageItemProps {
   message: Message;
@@ -47,6 +48,10 @@ const MessageItem: React.FC<MessageItemProps> = ({
 
   return (
     <div className={`message-item ${message.role}`}>
+      {message.role === "assistant" && (
+        <img src="/AI-avatar.jpg" alt="AI Avatar" className="avatar" />
+      )}
+
       <div className="message-container">
         <div className="message-content">{renderContent()}</div>
         <div className="message-actions">
@@ -72,6 +77,14 @@ const MessageItem: React.FC<MessageItemProps> = ({
           </button>
         </div>
       </div>
+
+      {message.role === "user" && (
+        <img
+          src="/user-avatar.png" // Update with your user avatar path
+          alt="User Avatar"
+          className="avatar"
+        />
+      )}
     </div>
   );
 };
