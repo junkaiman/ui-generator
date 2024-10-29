@@ -1,71 +1,62 @@
 "use client";
-import { Textarea } from "../ui/textarea";
-import { Label } from "../ui/label";
-import { Button } from "../ui/button";
-import { addChat, getChats, clearChats } from "@/lib/db";
-import { Chat, Messages } from "@/lib/types";
-import { useState, useEffect } from "react";
+import { Message } from "../../lib/types";
+import { useState } from "react";
+import MessageList from "./MessageList";
+import InputBar from "./InputBar";
+import "./ChatInterface.css";
 
 export default function ChatInterface() {
-  const testAddChat = async () => {
-    console.log("[Testing addChat]");
-    const messages: Messages = [
-      {
-        role: "user",
-        content: "Hello",
-      },
-      {
-        role: "assistant",
-        content: "Hi, how can I help you?",
-      },
-    ];
+  const [messages, setMessages] = useState<Message[]>([
+    {
+      role: "assistant",
+      content: "Hi! How can I assist you today?",
+    },
+  ]);
 
-    const res = await addChat(messages);
-    console.log("Chat added", res);
+  const handleModify = (message: Message) => {
+    console.log("Modify message: ", message);
   };
 
-  const testClearChats = async () => {
-    console.log("[Testing clearChats]");
-    const res = await clearChats();
-    console.log("Chats cleared", res);
+  const handleRegenerate = (message: Message) => {
+    console.log("Regenerate message", message);
   };
 
-  const useChats = () => {
-    const [chats, setChats] = useState<Chat[]>([]);
-    useEffect(() => {
-      getChats().then((res) => {
-        setChats(res);
-      });
-    }, [chats]);
-    return chats;
+  const handleSendMessage = (content: string) => {
+    const newMessage: Message = {
+      role: "user",
+      content: content,
+    };
+    setMessages((prevMessages) => [...prevMessages, newMessage]);
+
+    // Placeholder for AI response TODO: replace it
+    setTimeout(() => {
+      setMessages((prevMessages) => [
+        ...prevMessages,
+        {
+          role: "assistant",
+          content: "This is a placeholder response from AI.",
+        },
+      ]);
+    }, 500); // Simulate delay for AI response
   };
 
-  const chats = useChats();
+  const handleImageUpload = (imageFile: File) => {
+    // TODO: Implement image upload handling here
+    console.log("Uploaded an image: ", imageFile);
+  };
 
   return (
-    <div className="p-2">
-      <div className="p-2 h-[calc(100vh-212px)] border rounded-lg text-center">
-        <div>
-          <Button onClick={testAddChat}>addChat</Button>
-          <Button onClick={testClearChats}>clearChat</Button>
-        </div>
-        <div>
-          <Label>Chats</Label>
-          {chats.map((chat: Chat) => (
-            <div key={chat.id} className="p-2 border rounded-lg">
-              <div>{chat.description}</div>
-              <div>{chat.lastModified.toISOString()}</div>
-            </div>
-          ))}
-        </div>
-      </div>
-      <div>
-        <Label>Your message</Label>
-        <Textarea placeholder="Type your message here." id="message" />
-        <div className="p-2 flex justify-end">
-          <Button size="sm">Send</Button>
-        </div>
-      </div>
+    <div className="chat-interface">
+      <MessageList
+        messages={messages}
+        onModify={handleModify}
+        onRegenerate={handleRegenerate}
+      />
+
+      <InputBar
+        onMessageSend={handleSendMessage}
+        onImageUpload={handleImageUpload}
+      />
     </div>
   );
 }

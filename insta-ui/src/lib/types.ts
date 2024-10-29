@@ -31,4 +31,13 @@ interface Chat {
   lastModified: Date;
 }
 
-export type { Messages, Chat };
+/**
+ * ChatHeader used in SideBar
+ */
+interface ChatHeader {
+  id: string;
+  description: string;
+  lastModified: Date;
+}
+
+export type { Message, Messages, Chat, ChatHeader, TextContent, ImageContent };
