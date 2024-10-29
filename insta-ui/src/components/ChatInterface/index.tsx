@@ -1,6 +1,6 @@
 "use client";
 import { Message } from "../../lib/types";
-import { useRef, useState } from "react";
+import { useState } from "react";
 import MessageList from "./MessageList";
 import InputBar from "./InputBar";
 import "./ChatInterface.css";
@@ -14,11 +14,11 @@ export default function ChatInterface() {
   ]);
 
   const handleModify = (message: Message) => {
-    console.log("Modify message");
+    console.log("Modify message: ", message);
   };
 
   const handleRegenerate = (message: Message) => {
-    console.log("Regenerate message");
+    console.log("Regenerate message", message);
   };
 
   const handleSendMessage = (content: string) => {
@@ -42,7 +42,7 @@ export default function ChatInterface() {
 
   const handleImageUpload = (imageFile: File) => {
     // TODO: Implement image upload handling here
-    console.log("Uploaded an image.");
+    console.log("Uploaded an image: ", imageFile);
   };
 
   return (
