@@ -40,4 +40,4 @@ interface ChatHeader {
   lastModified: Date;
 }
 
-export type { Messages, Chat, ChatHeader };
+export type { Message, Messages, Chat, ChatHeader, TextContent, ImageContent };
