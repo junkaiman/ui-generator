@@ -1,9 +1,13 @@
 import ChatInterface from "@/components/ChatInterface";
-import Previewer from "@/components/Previewer";
 import Header from "@/components/Header";
 import SideBar from "@/components/SideBar";
+import dynamic from "next/dynamic";
 
 export default function Main() {
+  const Previewer = dynamic(() => import("@/components/Previewer"), {
+    ssr: false,
+  });
+
   return (
     <>
       <Header />
