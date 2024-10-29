@@ -22,7 +22,7 @@ const MessageList: React.FC<MessageListProps> = ({
   }, [messages]);
 
   return (
-    <div className="message-list-container">
+    <div className="message-list">
       {messages.map((message, index) => (
         <MessageItem
           key={index}

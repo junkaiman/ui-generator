@@ -66,15 +66,15 @@
   .chat-interface {
     display: flex;
     flex-direction: column;
-    height: 100vh;
     border: 2px solid #b4f9fb; /* Border color */
     border-radius: 8px; /* Rounded corners */
     padding: 10px; /* Inner spacing */
     background-color: #f9f9f9; /* Background color */
+    height: 100%;
   }
 
   
-  .message-list-container {
+  .message-list {
     overflow-y: auto;
     border: 1px solid #dcd5d5; /* Light border for message list */
     border-radius: 5px; /* Rounded corners for message list */

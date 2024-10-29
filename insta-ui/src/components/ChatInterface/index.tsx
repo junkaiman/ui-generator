@@ -8,23 +8,8 @@ import "./ChatInterface.css";
 export default function ChatInterface() {
   const [messages, setMessages] = useState<Message[]>([
     {
-      role: "user",
-      content: "Give me an image of a cat.",
-    },
-    {
       role: "assistant",
-      content: [
-        { type: "text", text: "Here is an image as requested." },
-        { type: "image", image_url: "https://example.com/image.jpg" },
-      ],
-    },
-    {
-      role: "user",
-      content: "Thanks",
-    },
-    {
-      role: "user",
-      content: "Great",
+      content: "Hi! How can I assist you today?",
     },
   ]);
 
@@ -42,6 +27,17 @@ export default function ChatInterface() {
       content: content,
     };
     setMessages((prevMessages) => [...prevMessages, newMessage]);
+
+    // Placeholder for AI response TODO: replace it
+    setTimeout(() => {
+      setMessages((prevMessages) => [
+        ...prevMessages,
+        {
+          role: "assistant",
+          content: "This is a placeholder response from AI.",
+        },
+      ]);
+    }, 500); // Simulate delay for AI response
   };
 
   const handleImageUpload = (imageFile: File) => {
@@ -50,7 +46,7 @@ export default function ChatInterface() {
   };
 
   return (
-    <div className="chat-interface h-screen overflow-hidden">
+    <div className="chat-interface">
       <MessageList
         messages={messages}
         onModify={handleModify}
