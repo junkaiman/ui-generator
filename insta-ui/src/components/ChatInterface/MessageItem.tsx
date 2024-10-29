@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { Message, TextContent, ImageContent } from "../../lib/types";
 import "./ChatInterface.css";
-import aiavatar from "../../assets/AI-avatar.jpg";
 
 interface MessageItemProps {
   message: Message;
