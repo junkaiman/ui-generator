@@ -1,9 +1,10 @@
 "use client";
 import { useRouter } from "next/navigation";
 import SideBarItem from "./SideBarItem";
-import { deleteChatById, getChats } from "@/lib/db";
+import { deleteChatById, getChats, addChat } from "@/lib/db";
 import { useEffect, useState } from "react";
-import { ChatHeader } from "@/lib/types";
+import { ChatHeader, Messages } from "@/lib/types";
+import { Button } from "../ui/button";
 
 export default function SideBar() {
   const router = useRouter();
@@ -20,6 +21,21 @@ export default function SideBar() {
 
   const chats = useChats();
 
+  const addNewChat = async () => {
+    const messages: Messages = [
+      {
+        role: "user",
+        content: "Hello",
+      },
+      {
+        role: "assistant",
+        content: "Hi, how can I help you?",
+      },
+    ];
+    const res = await addChat(messages);
+    router.push(`/c/${res}`);
+  };
+
   const onChatSelect = (chatId: string) => {
     router.push(`/c/${chatId}`);
   };
@@ -31,6 +47,16 @@ export default function SideBar() {
 
   return (
     <div>
+      <div className="flex justify-center m-2">
+        <Button
+          className="flex items-center space-x-2 bg-gray-600 text-white py-2 px-4 rounded-full"
+          onClick={addNewChat}
+        >
+          <span className="text-xl">+</span>
+          <span>New Chat</span>
+        </Button>
+      </div>
+
       {chats.map((chat) => (
         <SideBarItem
           key={chat.id}
