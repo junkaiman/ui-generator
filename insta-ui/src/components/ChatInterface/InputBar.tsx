@@ -1,5 +1,7 @@
 import React, { useState } from "react";
-import { AiOutlinePaperClip, AiOutlineSend } from "react-icons/ai";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPaperPlane, faFileImage } from "@fortawesome/free-regular-svg-icons";
+import { IconProp } from "@fortawesome/fontawesome-svg-core";
 interface InputBarProps {
   onMessageSend: (message: string) => void;
   onImageUpload: (imageFile: File) => void;
@@ -32,7 +34,7 @@ const InputBar: React.FC<InputBarProps> = ({
       className="flex items-center p-4 bg-gray-100 rounded-lg shadow-md"
     >
       <label className="cursor-pointer mr-2">
-        <AiOutlinePaperClip size={24} className="text-gray-600" />
+        <FontAwesomeIcon icon={faFileImage as IconProp} />
         <input
           type="file"
           accept="image/*"
@@ -50,7 +52,7 @@ const InputBar: React.FC<InputBarProps> = ({
       />
 
       <button type="submit" className="ml-2">
-        <AiOutlineSend size={24} className="text-blue-500" />
+        <FontAwesomeIcon icon={faPaperPlane as IconProp} />
       </button>
     </form>
   );
