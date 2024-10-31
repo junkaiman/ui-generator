@@ -22,16 +22,7 @@ export default function SideBar() {
   const chats = useChats();
 
   const addNewChat = async () => {
-    const messages: Messages = [
-      {
-        role: "user",
-        content: "Hello",
-      },
-      {
-        role: "assistant",
-        content: "Hi, how can I help you?",
-      },
-    ];
+    const messages: Messages = [];
     const res = await addChat(messages);
     router.push(`/c/${res}`);
   };
@@ -57,15 +48,21 @@ export default function SideBar() {
         </Button>
       </div>
 
-      {chats.map((chat) => (
-        <SideBarItem
-          key={chat.id}
-          chatId={chat.id}
-          chatTitle={chat.description}
-          onChatSelect={onChatSelect}
-          onChatDelete={onChatDelete}
-        />
-      ))}
+      {chats
+        .sort(
+          (a, b) =>
+            new Date(b.lastModified).getTime() -
+            new Date(a.lastModified).getTime()
+        )
+        .map((chat) => (
+          <SideBarItem
+            key={chat.id}
+            chatId={chat.id}
+            chatTitle={chat.description}
+            onChatSelect={onChatSelect}
+            onChatDelete={onChatDelete}
+          />
+        ))}
     </div>
   );
 }

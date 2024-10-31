@@ -15,7 +15,7 @@ const addChat = async (messages: Messages) => {
   const chat = {
     id,
     messages,
-    description: "Test chat",
+    description: "New chat",
     lastModified: new Date(),
   };
   return db.chats.add(chat);

@@ -2,6 +2,11 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faComments } from "@fortawesome/free-regular-svg-icons";
 import { faEllipsis } from "@fortawesome/free-solid-svg-icons";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 
 interface ISideBarItemProps {
   chatId: string;
@@ -16,8 +21,6 @@ export default function SideBarItem({
   onChatSelect,
   onChatDelete,
 }: ISideBarItemProps) {
-  // TODO: pop up menu for delete and rename
-  // TODO: categorize by date (unnecessary?)
   return (
     <div className="flex items-center rounded-md hover:bg-gray-100">
       <a
@@ -27,9 +30,26 @@ export default function SideBarItem({
         <FontAwesomeIcon icon={faComments} />
         <div className="flex-grow text-left">{chatTitle}</div>
       </a>
-      <a onClick={() => onChatDelete(chatId)} className="p-2 cursor-pointer">
-        <FontAwesomeIcon icon={faEllipsis} />
-      </a>
+      <Popover>
+        <PopoverTrigger>
+          <a className="p-2 cursor-pointer">
+            <FontAwesomeIcon icon={faEllipsis} />
+          </a>
+        </PopoverTrigger>
+        <PopoverContent className="w-32 px-0 py-0">
+          <div
+            className="p-3 cursor-pointer hover:bg-gray-100 rounded"
+            onClick={() => onChatDelete(chatId)}
+          >
+            🗑️ Delete
+          </div>
+          {/* TODO: Renaming */}
+          {/* <hr className="h-px bg-gray-200 border-0 dark:bg-gray-700"></hr>
+          <div className="p-3 cursor-pointer hover:bg-gray-100 rounded">
+            🔄 Rename
+          </div> */}
+        </PopoverContent>
+      </Popover>
     </div>
   );
 }
