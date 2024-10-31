@@ -57,15 +57,21 @@ export default function SideBar() {
         </Button>
       </div>
 
-      {chats.map((chat) => (
-        <SideBarItem
-          key={chat.id}
-          chatId={chat.id}
-          chatTitle={chat.description}
-          onChatSelect={onChatSelect}
-          onChatDelete={onChatDelete}
-        />
-      ))}
+      {chats
+        .sort(
+          (a, b) =>
+            new Date(b.lastModified).getTime() -
+            new Date(a.lastModified).getTime()
+        )
+        .map((chat) => (
+          <SideBarItem
+            key={chat.id}
+            chatId={chat.id}
+            chatTitle={chat.description}
+            onChatSelect={onChatSelect}
+            onChatDelete={onChatDelete}
+          />
+        ))}
     </div>
   );
 }
