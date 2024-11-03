@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>LLM Service Test</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        pre {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50">
+    <div class="container mx-auto px-4 py-8 max-w-4xl">
+        <h1 class="text-3xl font-bold mb-8">LLM Service Test</h1>
+
+        <!-- Test Form -->
+        <div class="bg-white rounded-lg shadow p-6 mb-8">
+            <h2 class="text-xl font-semibold mb-4">Generate UI Component</h2>
+
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700 mb-2">
+                    Description:
+                </label>
+                <textarea id="input" class="w-full p-2 border rounded-md" rows="4"
+                    placeholder="Describe the component you want...">Create a button that changes color on hover and shows a loading spinner when clicked</textarea>
+            </div>
+
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700 mb-2">
+                    Previous Code (optional):
+                </label>
+                <textarea id="previousCode" class="w-full p-2 border rounded-md" rows="4"
+                    placeholder="Enter previous code if you want to modify existing component..."></textarea>
+            </div>
+
+            <button onclick="generateCode()"
+                class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                id="generateButton">
+                Generate Code
+            </button>
+        </div>
+
+        <!-- Output Section -->
+        <div class="bg-white rounded-lg shadow p-6">
+            <h2 class="text-xl font-semibold mb-4">Output</h2>
+            <div id="status" class="mb-4 hidden"></div>
+            <pre id="output" class="bg-gray-50 p-4 rounded-md text-sm">Output will appear here...</pre>
+        </div>
+    </div>
+
+    <script>
+        async function generateCode() {
+            const input = document.getElementById('input').value;
+            const previousCode = document.getElementById('previousCode').value;
+            const output = document.getElementById('output');
+            const status = document.getElementById('status');
+            const generateButton = document.getElementById('generateButton');
+
+            if (!input.trim()) {
+                showStatus('Please enter a description', 'error');
+                return;
+            }
+
+            try {
+                // Disable button and show loading state
+                generateButton.disabled = true;
+                generateButton.innerHTML = 'Generating...';
+                output.textContent = 'Generating code...';
+                status.className = 'mb-4 hidden';
+
+                const response = await fetch('/api/generate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        textInput: input,
+                        previousCode: previousCode || undefined
+                    })
+                });
+
+                const data = await response.json();
+                if (data.code) {
+                    output.textContent = data.code;
+                } else if (data.error) {
+                    output.textContent = `Error: ${data.error}`;
+                }
+
+                showStatus('Code generated successfully!', 'success');
+
+            } catch (error) {
+                console.error('Error:', error);
+                output.textContent = 'An error occurred while generating code.';
+                showStatus(error.message, 'error');
+            } finally {
+                // Re-enable button
+                generateButton.disabled = false;
+                generateButton.innerHTML = 'Generate Code';
+            }
+        }
+
+        function showStatus(message, type) {
+            const status = document.getElementById('status');
+            status.textContent = message;
+            status.className = `mb-4 p-4 rounded-md ${type === 'error'
+                ? 'bg-red-50 text-red-700'
+                : 'bg-green-50 text-green-700'
+                }`;
+        }
+    </script>
+</body>
+
+</html>
