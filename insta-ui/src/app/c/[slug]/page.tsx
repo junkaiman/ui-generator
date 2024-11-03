@@ -34,7 +34,7 @@ export default async function Main({
           <ResizableHandle withHandle />
 
           <ResizablePanel defaultSize={40} minSize={30} maxSize={70}>
-            <ChatInterface />
+            <ChatInterface chatId={slug} />
           </ResizablePanel>
 
           <ResizableHandle withHandle />
