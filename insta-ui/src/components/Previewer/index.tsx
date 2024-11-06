@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { LiveProvider, LivePreview, LiveError } from "react-live";
 import MonacoEditor from "react-monaco-editor";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PreviewerTabs } from "@/lib/enums";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
