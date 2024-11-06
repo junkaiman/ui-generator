@@ -66,8 +66,8 @@
   .chat-interface {
     display: flex;
     flex-direction: column;
-    border: 2px solid #b4f9fb; /* Border color */
-    border-radius: 8px; /* Rounded corners */
+    border: 1px solid #d1d5db;  /* Gray-300 border color */
+    border-radius: 0.5rem;      /* Rounded corners equivalent to rounded-lg */
     padding: 10px; /* Inner spacing */
     background-color: #f9f9f9; /* Background color */
     height: 100%;
