@@ -64,7 +64,7 @@ export default function Previewer() {
   return (
     <Tabs
       defaultValue={PreviewerTabs.Preview}
-      className="p-2 h-full flex flex-col border border-gray-300 rounded-lg"
+      className="p-2 h-full flex flex-col border border-gray-300 rounded-lg overflow-hidden"
     >
       <TabsList className="grid w-full grid-cols-2">
         <TabsTrigger value={PreviewerTabs.Preview}>Preview</TabsTrigger>
@@ -72,12 +72,15 @@ export default function Previewer() {
       </TabsList>
 
       {/* Live Preview Tab */}
-      <TabsContent value={PreviewerTabs.Preview} className="flex-grow">
-        <Card className="p-4 border rounded-xl h-full">
+      <TabsContent
+        value={PreviewerTabs.Preview}
+        className="flex-grow overflow-hidden"
+      >
+        <Card className="p-4 border rounded-xl h-full overflow-hidden">
           <LiveProvider code={code} noInline={true}>
-            <div className="relative h-full">
+            <div className="relative h-full overflow-hidden">
               {/* Preview Section */}
-              <div className="p-4 h-[calc(100vh-204px)] border rounded bg-white min-h-[400px] h-full">
+              <div className="p-4 h-[calc(100vh-204px)] border rounded bg-white min-h-[400px] h-full overflow-auto">
                 <LivePreview />
               </div>
               <LiveError className="absolute top-0 left-0 right-0 bottom-0 p-4 overflow-auto text-red-500 bg-red-50 rounded-xl mt-2" />
@@ -88,9 +91,12 @@ export default function Previewer() {
       </TabsContent>
 
       {/* Code Editor Tab */}
-      <TabsContent value={PreviewerTabs.Code} className="flex-grow">
-        <Card className="p-4 border rounded-xl h-full">
-          <div className="h-full flex flex-col">
+      <TabsContent
+        value={PreviewerTabs.Code}
+        className="flex-grow overflow-hidden"
+      >
+        <Card className="p-4 border rounded-xl h-full flex flex-col overflow-hidden">
+          <div className="h-full flex flex-col overflow-auto">
             <div className="flex justify-end mb-2">
               <button
                 onClick={() => navigator.clipboard.writeText(code)}
@@ -100,14 +106,19 @@ export default function Previewer() {
               </button>
             </div>
 
-            <div className="flex-grow">
+            <div className="flex-grow overflow-auto">
               <MonacoEditor
+                height="100%"
+                width="100%"
                 language="javascript"
                 theme="vs-dark"
                 value={code}
                 onChange={(value) => handleCodeChange(value || "")}
-                options={{ minimap: { enabled: false } }}
-                className="rounded-lg mt-3 h-full"
+                options={{
+                  minimap: { enabled: false },
+                  scrollBeyondLastLine: false,
+                }}
+                className="rounded-lg mt-3"
               />
             </div>
           </div>
