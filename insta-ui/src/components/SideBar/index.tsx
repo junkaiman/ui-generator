@@ -37,7 +37,7 @@ export default function SideBar() {
   };
 
   return (
-    <div>
+    <div className="h-full overflow-y-auto">
       <div className="flex justify-center m-2">
         <Button
           className="flex items-center space-x-2 bg-gray-600 text-white py-2 px-4 rounded-full"

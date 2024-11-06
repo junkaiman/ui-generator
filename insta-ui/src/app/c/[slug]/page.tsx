@@ -16,11 +16,8 @@ export default function Main() {
   return (
     <div className="flex flex-col h-screen">
       <Header />
-      <div className="flex-1">
-        <ResizablePanelGroup
-          direction="horizontal"
-          className="flex-1 overflow-hidden"
-        >
+      <div className="flex-1 overflow-hidden">
+        <ResizablePanelGroup direction="horizontal">
           <ResizablePanel defaultSize={20} minSize={10} maxSize={30}>
             <SideBar />
           </ResizablePanel>
