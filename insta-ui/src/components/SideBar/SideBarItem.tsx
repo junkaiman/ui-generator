@@ -11,6 +11,7 @@ import {
 interface ISideBarItemProps {
   chatId: string;
   chatTitle: string;
+  onCurrentChat: boolean;
   onChatSelect: (chatId: string) => void;
   onChatDelete: (chatId: string) => void;
 }
@@ -18,11 +19,17 @@ interface ISideBarItemProps {
 export default function SideBarItem({
   chatId,
   chatTitle,
+  onCurrentChat,
   onChatSelect,
   onChatDelete,
 }: ISideBarItemProps) {
+  const chatItemClass = onCurrentChat ? "bg-gray-100" : "";
   return (
-    <div className="flex items-center rounded-md hover:bg-gray-100">
+    <div
+      className={
+        "flex items-center rounded-md hover:bg-gray-100 " + chatItemClass
+      }
+    >
       <a
         onClick={() => onChatSelect(chatId)}
         className="flex flex-row gap-2 p-3 text-gray-800 cursor-pointer items-center w-full"

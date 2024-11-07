@@ -28,7 +28,7 @@ export default async function Main({
           className="flex-1 overflow-hidden"
         >
           <ResizablePanel defaultSize={20} minSize={10} maxSize={30}>
-            <SideBar />
+            <SideBar chatId={slug} />
           </ResizablePanel>
 
           <ResizableHandle withHandle />

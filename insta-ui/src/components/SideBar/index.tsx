@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import { ChatHeader, Messages } from "@/lib/types";
 import { Button } from "../ui/button";
 
-export default function SideBar() {
+export default function SideBar({ chatId }: { chatId: string }) {
   const router = useRouter();
 
   const [chats, setChats] = useState([] as ChatHeader[]);
@@ -57,6 +57,7 @@ export default function SideBar() {
           key={chat.id}
           chatId={chat.id}
           chatTitle={chat.description}
+          onCurrentChat={chat.id === chatId}
           onChatSelect={onChatSelect}
           onChatDelete={onChatDelete}
         />
