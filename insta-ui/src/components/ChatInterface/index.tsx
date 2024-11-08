@@ -1,17 +1,23 @@
 "use client";
-import { Message } from "../../lib/types";
-import { useState } from "react";
+import { Chat, Message } from "../../lib/types";
+import { useEffect, useState } from "react";
 import MessageList from "./MessageList";
 import InputBar from "./InputBar";
 import "./ChatInterface.css";
+import { getChatById, updateChat } from "@/lib/db";
 
-export default function ChatInterface() {
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      role: "assistant",
-      content: "Hi! How can I assist you today?",
-    },
-  ]);
+export default function ChatInterface({ chatId }: { chatId: string }) {
+  const [messages, setMessages] = useState<Message[]>([]);
+
+  // Load chat messages from DB
+  useEffect(() => {
+    if (!chatId) {
+      return;
+    }
+    getChatById(chatId).then((chat: Chat | undefined) => {
+      if (chat) setMessages(chat.messages);
+    });
+  }, [chatId]);
 
   const handleModify = (message: Message) => {
     console.log("Modify message: ", message);
@@ -28,15 +34,29 @@ export default function ChatInterface() {
     };
     setMessages((prevMessages) => [...prevMessages, newMessage]);
 
+    // Save message to DB
+    getChatById(chatId).then((chat: Chat | undefined) => {
+      if (chat) {
+        chat.messages.push(newMessage);
+        updateChat(chat);
+      }
+    });
+
     // Placeholder for AI response TODO: replace it
     setTimeout(() => {
-      setMessages((prevMessages) => [
-        ...prevMessages,
-        {
-          role: "assistant",
-          content: "This is a placeholder response from AI.",
-        },
-      ]);
+      const aiResponse: Message = {
+        role: "assistant",
+        content: "This is a placeholder response from AI.",
+      };
+      setMessages((prevMessages) => [...prevMessages, aiResponse]);
+
+      // if AI response success, save message to DB
+      getChatById(chatId).then((chat: Chat | undefined) => {
+        if (chat) {
+          chat.messages.push(aiResponse);
+          updateChat(chat);
+        }
+      });
     }, 500); // Simulate delay for AI response
   };
 
@@ -44,6 +64,19 @@ export default function ChatInterface() {
     // TODO: Implement image upload handling here
     console.log("Uploaded an image: ", imageFile);
   };
+
+  // TODO: replace with better UI
+  if (!chatId) {
+    return (
+      <div className="chat-interface">
+        <div className="flex justify-center items-center h-full">
+          <h1 className="text-2xl text-gray-500">
+            {"Click [New Chat] button on the left"}
+          </h1>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="chat-interface">
