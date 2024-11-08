@@ -2,10 +2,12 @@
 import { openai } from '@ai-sdk/openai';
 import { generateText } from 'ai';
 import { generateMessages } from '@/app/server/llm/prompts';
-import { GenerateRequest } from '@/app/server/llm/types';
+import { GenerateRequest } from '@/lib/types';
+import { MODEL } from '@/app/server/llm/constants';
 
 export const maxDuration = 30;
 
+  
 export async function POST(req: Request) {
     try {
         const input: GenerateRequest = await req.json();
@@ -24,11 +26,11 @@ export async function POST(req: Request) {
         );
 
         const result = await generateText({
-            model: openai('gpt-4-turbo'),
+            model: openai(MODEL),
             messages,
         });
+        
         // console.log("result", result.text)
-        // return Response.json(result.text);
         const codeMatch = result.text.match(/```(?:javascript|jsx)?\n([\s\S]*?)```/);
         const code = codeMatch ? codeMatch[1].trim() : result.text;
 

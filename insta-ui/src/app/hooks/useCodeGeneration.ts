@@ -2,7 +2,7 @@
 'use client';
 
 import { useChat } from 'ai/react';
-import { GenerateRequest } from '@/app/server/llm/types';
+import { GenerateRequest } from '@/lib/types';
 
 export function useCodeGeneration() {
     const { messages, append, isLoading, error } = useChat({
