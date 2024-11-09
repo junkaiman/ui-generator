@@ -34,20 +34,26 @@ const MessageItem: React.FC<MessageItemProps> = ({
         <textarea
           value={editContent as string}
           onChange={(e) => setEditContent(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" && !e.shiftKey) {
+              e.preventDefault();
+              handleSaveEdit();
+            }
+          }}
           className="w-full h-32 p-2 border border-gray-300 rounded-lg text-black"
         />
       );
     }
 
     if (typeof message.content === "string") {
-      return <p className="text-sm">{message.content}</p>;
+      return <p className="text-sm break-words">{message.content}</p>;
     }
 
     return (message.content as (TextContent | ImageContent)[]).map(
       (content, index) => {
         if (content.type === "text") {
           return (
-            <p key={index} className="text-sm">
+            <p key={index} className="text-sm break-words">
               {(content as TextContent).text}
             </p>
           );

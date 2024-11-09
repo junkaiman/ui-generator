@@ -1,5 +1,5 @@
 "use client";
-import { Chat, Message } from "../../lib/types";
+import { Chat, Message, TextContent, ImageContent } from "../../lib/types";
 import { useEffect, useState } from "react";
 import MessageList from "./MessageList";
 import InputBar from "./InputBar";
@@ -68,7 +68,9 @@ export default function ChatInterface({ chatId }: { chatId: string }) {
       });
     }, 500);
   };
-  const handleSendMessage = (content: string) => {
+  const handleSendMessage = (
+    content: string | (TextContent | ImageContent)[]
+  ) => {
     const newMessage: Message = {
       role: "user",
       content: content,

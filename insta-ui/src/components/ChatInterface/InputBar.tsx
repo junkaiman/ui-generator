@@ -43,12 +43,18 @@ const InputBar: React.FC<InputBarProps> = ({
         />
       </label>
 
-      <input
-        type="text"
+      <textarea
         value={inputValue}
         onChange={(e) => setInputValue(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" && !e.shiftKey) {
+            e.preventDefault();
+            handleSubmit(e as unknown as React.FormEvent);
+          }
+        }}
         placeholder="Type your message..."
-        className="flex-1 border rounded-lg p-2"
+        className="flex-1 border rounded-lg p-2 resize-none"
+        rows={1}
       />
 
       <button type="submit" className="ml-2">
