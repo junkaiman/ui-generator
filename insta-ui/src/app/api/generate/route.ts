@@ -1,13 +1,19 @@
-// app/api/generate/route.ts
-import { openai } from '@ai-sdk/openai';
-import { generateText } from 'ai';
+import OpenAI from 'openai';
 import { generateMessages } from '@/app/server/llm/prompts';
-import { GenerateRequest } from '@/lib/types';
+import { GenerateRequest, Message } from '@/lib/types';
 import { MODEL } from '@/app/server/llm/constants';
+import type { ChatCompletionMessageParam } from 'openai/resources/chat/completions';
+
+const openai = new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY
+});
+
+function transformMessages(messages: Message[]): ChatCompletionMessageParam[] {
+    return messages as ChatCompletionMessageParam[];
+}
 
 export const maxDuration = 30;
 
-  
 export async function POST(req: Request) {
     try {
         const input: GenerateRequest = await req.json();
@@ -25,14 +31,14 @@ export async function POST(req: Request) {
             input.previousCode
         );
 
-        const result = await generateText({
-            model: openai(MODEL),
-            messages,
+        const completion = await openai.chat.completions.create({
+            model: MODEL,
+            messages: transformMessages(messages),
         });
-        
-        // console.log("result", result.text)
-        const codeMatch = result.text.match(/```(?:javascript|jsx)?\n([\s\S]*?)```/);
-        const code = codeMatch ? codeMatch[1].trim() : result.text;
+
+        const content = completion.choices[0].message.content;
+        const codeMatch = content?.match(/```(?:javascript|jsx)?\n([\s\S]*?)```/);
+        const code = codeMatch ? codeMatch[1].trim() : content;
 
         return new Response(
             JSON.stringify({ code }),

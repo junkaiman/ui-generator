@@ -10,15 +10,17 @@ interface TextContent {
 }
 
 interface ImageContent {
-  type: 'image';
-  image_url: string;
+  type: 'image_url';
+  image_url: {
+    url: string;
+  };
 }
 
 export type Role = "system" | "user" | "assistant";
 
 interface Message {
   role: Role;
-  content: string;
+  content: string | (TextContent | ImageContent)[];
 }
 
 type Messages = Message[];
