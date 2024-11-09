@@ -26,6 +26,7 @@ const MessageList: React.FC<MessageListProps> = ({
       {messages.map((message, index) => (
         <MessageItem
           key={index}
+          messageIndex={index}
           message={message}
           onModify={onModify}
           onRegenerate={onRegenerate}

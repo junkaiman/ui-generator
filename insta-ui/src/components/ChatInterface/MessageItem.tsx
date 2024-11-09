@@ -4,14 +4,14 @@ import "./ChatInterface.css";
 
 interface MessageItemProps {
   message: Message;
-  key: number;
+  messageIndex: number;
   onModify: (index: number, message: Message) => void;
   onRegenerate: (index: number) => void;
 }
 
 const MessageItem: React.FC<MessageItemProps> = ({
   message,
-  key,
+  messageIndex,
   onModify,
   onRegenerate,
 }) => {
@@ -24,7 +24,7 @@ const MessageItem: React.FC<MessageItemProps> = ({
 
   const handleSaveEdit = () => {
     message.content = editContent;
-    onModify(key, message);
+    onModify(messageIndex, message);
     setIsEditing(false);
   };
 
@@ -96,7 +96,7 @@ const MessageItem: React.FC<MessageItemProps> = ({
             <button
               onMouseEnter={() => setHoveredButton("regenerate")}
               onMouseLeave={() => setHoveredButton(null)}
-              onClick={() => onRegenerate(key)}
+              onClick={() => onRegenerate(messageIndex)}
               className={`button-regenerate ${
                 hoveredButton === "regenerate" ? "shadow-lg" : ""
               }`}

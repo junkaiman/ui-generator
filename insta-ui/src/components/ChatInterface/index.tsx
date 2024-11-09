@@ -24,15 +24,17 @@ export default function ChatInterface({ chatId }: { chatId: string }) {
       const updatedMessages = prevMessages.map((msg, i) =>
         i === index ? message : msg
       );
-      return updatedMessages;
+      return updatedMessages.slice(0, index + 1);
     });
 
     getChatById(chatId).then((chat: Chat | undefined) => {
       if (chat) {
-        chat.messages = messages;
+        chat.messages = messages.slice(0, index + 1);
         updateChat(chat);
       }
     });
+
+    getAIResponse(messages[index]);
   };
 
   const handleRegenerate = (index: number) => {
@@ -52,20 +54,7 @@ export default function ChatInterface({ chatId }: { chatId: string }) {
     });
   };
 
-  const handleSendMessage = (content: string) => {
-    const newMessage: Message = {
-      role: "user",
-      content: content,
-    };
-    setMessages((prevMessages) => [...prevMessages, newMessage]);
-
-    getChatById(chatId).then((chat: Chat | undefined) => {
-      if (chat) {
-        chat.messages.push(newMessage);
-        updateChat(chat);
-      }
-    });
-
+  const getAIResponse = (message: Message) => {
     setTimeout(() => {
       const aiResponse: Message = {
         role: "assistant",
@@ -80,6 +69,22 @@ export default function ChatInterface({ chatId }: { chatId: string }) {
         }
       });
     }, 500);
+  };
+  const handleSendMessage = (content: string) => {
+    const newMessage: Message = {
+      role: "user",
+      content: content,
+    };
+    setMessages((prevMessages) => [...prevMessages, newMessage]);
+
+    getChatById(chatId).then((chat: Chat | undefined) => {
+      if (chat) {
+        chat.messages.push(newMessage);
+        updateChat(chat);
+      }
+    });
+
+    getAIResponse(newMessage);
   };
 
   const handleImageUpload = (imageFile: File) => {
