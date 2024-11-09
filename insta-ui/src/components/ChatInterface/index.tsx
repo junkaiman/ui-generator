@@ -87,9 +87,25 @@ export default function ChatInterface({ chatId }: { chatId: string }) {
     getAIResponse(newMessage);
   };
 
-  const handleImageUpload = (imageFile: File) => {
-    // TODO: Implement image upload handling here
-    console.log("Uploaded an image: ", imageFile);
+  const handleImageUpload = async (imageFile: File) => {
+    // Simulate image upload and get URL
+    const imageUrl = URL.createObjectURL(imageFile);
+
+    const newMessage: Message = {
+      role: "user",
+      content: [{ type: "image", image_url: imageUrl }],
+    };
+
+    setMessages((prevMessages) => [...prevMessages, newMessage]);
+
+    getChatById(chatId).then((chat: Chat | undefined) => {
+      if (chat) {
+        chat.messages.push(newMessage);
+        updateChat(chat);
+      }
+    });
+
+    getAIResponse(newMessage);
   };
 
   // TODO: replace with better UI

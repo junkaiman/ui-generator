@@ -22,9 +22,9 @@ const InputBar: React.FC<InputBarProps> = ({
   };
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]; // Get the uploaded file
+    const file = e.target.files?.[0];
     if (file) {
-      onImageUpload(file); // Call the onImageUpload function with the image file
+      onImageUpload(file);
     }
   };
 
