@@ -19,12 +19,37 @@ export default function ChatInterface({ chatId }: { chatId: string }) {
     });
   }, [chatId]);
 
-  const handleModify = (message: Message) => {
-    console.log("Modify message: ", message);
+  const handleModify = (index: number, message: Message) => {
+    setMessages((prevMessages) => {
+      const updatedMessages = prevMessages.map((msg, i) =>
+        i === index ? message : msg
+      );
+      return updatedMessages;
+    });
+
+    getChatById(chatId).then((chat: Chat | undefined) => {
+      if (chat) {
+        chat.messages = messages;
+        updateChat(chat);
+      }
+    });
   };
 
-  const handleRegenerate = (message: Message) => {
-    console.log("Regenerate message", message);
+  const handleRegenerate = (index: number) => {
+    setMessages((prevMessages) => {
+      const newContent = "Here's a new AI response for you!";
+      const updatedMessages = prevMessages.map((msg, i) =>
+        i === index ? { ...msg, content: newContent } : msg
+      );
+      return updatedMessages;
+    });
+
+    getChatById(chatId).then((chat: Chat | undefined) => {
+      if (chat) {
+        chat.messages = messages;
+        updateChat(chat);
+      }
+    });
   };
 
   const handleSendMessage = (content: string) => {
@@ -34,7 +59,6 @@ export default function ChatInterface({ chatId }: { chatId: string }) {
     };
     setMessages((prevMessages) => [...prevMessages, newMessage]);
 
-    // Save message to DB
     getChatById(chatId).then((chat: Chat | undefined) => {
       if (chat) {
         chat.messages.push(newMessage);
@@ -42,7 +66,6 @@ export default function ChatInterface({ chatId }: { chatId: string }) {
       }
     });
 
-    // Placeholder for AI response TODO: replace it
     setTimeout(() => {
       const aiResponse: Message = {
         role: "assistant",
@@ -50,14 +73,13 @@ export default function ChatInterface({ chatId }: { chatId: string }) {
       };
       setMessages((prevMessages) => [...prevMessages, aiResponse]);
 
-      // if AI response success, save message to DB
       getChatById(chatId).then((chat: Chat | undefined) => {
         if (chat) {
           chat.messages.push(aiResponse);
           updateChat(chat);
         }
       });
-    }, 500); // Simulate delay for AI response
+    }, 500);
   };
 
   const handleImageUpload = (imageFile: File) => {

@@ -4,12 +4,14 @@ import "./ChatInterface.css";
 
 interface MessageItemProps {
   message: Message;
-  onModify: (message: Message) => void;
-  onRegenerate: (message: Message) => void;
+  key: number;
+  onModify: (index: number, message: Message) => void;
+  onRegenerate: (index: number) => void;
 }
 
 const MessageItem: React.FC<MessageItemProps> = ({
   message,
+  key,
   onModify,
   onRegenerate,
 }) => {
@@ -17,7 +19,26 @@ const MessageItem: React.FC<MessageItemProps> = ({
     "modify" | "regenerate" | null
   >(null);
 
+  const [isEditing, setIsEditing] = useState(false);
+  const [editContent, setEditContent] = useState(message.content);
+
+  const handleSaveEdit = () => {
+    message.content = editContent;
+    onModify(key, message);
+    setIsEditing(false);
+  };
+
   const renderContent = () => {
+    if (isEditing) {
+      return (
+        <textarea
+          value={editContent as string}
+          onChange={(e) => setEditContent(e.target.value)}
+          className="w-full h-32 p-2 border border-gray-300 rounded-lg text-black"
+        />
+      );
+    }
+
     if (typeof message.content === "string") {
       return <p className="text-sm">{message.content}</p>;
     }
@@ -54,26 +75,35 @@ const MessageItem: React.FC<MessageItemProps> = ({
       <div className="message-container">
         <div className="message-content">{renderContent()}</div>
         <div className="message-actions">
-          <button
-            onMouseEnter={() => setHoveredButton("modify")}
-            onMouseLeave={() => setHoveredButton(null)}
-            onClick={() => onModify(message)}
-            className={`button-modify ${
-              hoveredButton === "modify" ? "shadow-lg" : ""
-            }`}
-          >
-            Modify
-          </button>
-          <button
-            onMouseEnter={() => setHoveredButton("regenerate")}
-            onMouseLeave={() => setHoveredButton(null)}
-            onClick={() => onRegenerate(message)}
-            className={`button-regenerate ${
-              hoveredButton === "regenerate" ? "shadow-lg" : ""
-            }`}
-          >
-            Regenerate
-          </button>
+          {message.role === "user" &&
+            (isEditing ? (
+              <>
+                <button onClick={handleSaveEdit} className="button-save">
+                  Save
+                </button>
+                <button onClick={() => setIsEditing(false)}>Cancel</button>
+              </>
+            ) : (
+              <button
+                onClick={() => setIsEditing(true)}
+                className="button-edit"
+              >
+                Edit
+              </button>
+            ))}
+
+          {message.role === "assistant" && (
+            <button
+              onMouseEnter={() => setHoveredButton("regenerate")}
+              onMouseLeave={() => setHoveredButton(null)}
+              onClick={() => onRegenerate(key)}
+              className={`button-regenerate ${
+                hoveredButton === "regenerate" ? "shadow-lg" : ""
+              }`}
+            >
+              Regenerate
+            </button>
+          )}
         </div>
       </div>
 

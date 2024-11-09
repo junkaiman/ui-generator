@@ -5,8 +5,8 @@ import "./ChatInterface.css";
 
 interface MessageListProps {
   messages: Message[];
-  onModify: (message: Message) => void;
-  onRegenerate: (message: Message) => void;
+  onModify: (index: number, message: Message) => void;
+  onRegenerate: (index: number) => void;
 }
 
 const MessageList: React.FC<MessageListProps> = ({

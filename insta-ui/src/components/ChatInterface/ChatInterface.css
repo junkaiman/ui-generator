@@ -50,8 +50,8 @@
   
   /* Apply blue background only to user messages */
   .user .message-container {
-    background-color: #3b82f6; /* Tailwind's bg-blue-500 */
-    color: white; /* Text color for user messages */
+    background-color: #f3f4f6; /* Tailwind's bg-gray-100 */
+    color: #1f2937; /* Tailwind's text-gray-800 */
   }
   
   /* Apply gray background only to assistant messages */
