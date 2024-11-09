@@ -39,19 +39,17 @@ export default function ChatInterface({ chatId }: { chatId: string }) {
 
   const handleRegenerate = (index: number) => {
     setMessages((prevMessages) => {
-      const newContent = "Here's a new AI response for you!";
-      const updatedMessages = prevMessages.map((msg, i) =>
-        i === index ? { ...msg, content: newContent } : msg
-      );
-      return updatedMessages;
+      return prevMessages.slice(0, index);
     });
 
     getChatById(chatId).then((chat: Chat | undefined) => {
       if (chat) {
-        chat.messages = messages;
+        chat.messages = messages.slice(0, index);
         updateChat(chat);
       }
     });
+
+    getAIResponse(messages[index]);
   };
 
   const getAIResponse = (message: Message) => {
