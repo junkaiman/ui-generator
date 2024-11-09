@@ -54,7 +54,7 @@ const InputBar: React.FC<InputBarProps> = ({
         }}
         placeholder="Type your message..."
         className="flex-1 border rounded-lg p-2 resize-none"
-        rows={1}
+        rows={3} // Increased the number of rows to make the textarea higher
       />
 
       <button type="submit" className="ml-2">

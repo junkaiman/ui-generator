@@ -53,7 +53,7 @@ const MessageItem: React.FC<MessageItemProps> = ({
       (content, index) => {
         if (content.type === "text") {
           return (
-            <p key={index} className="text-sm break-words">
+            <p key={index} className="text-sm break-words whitespace-pre-line">
               {(content as TextContent).text}
             </p>
           );
