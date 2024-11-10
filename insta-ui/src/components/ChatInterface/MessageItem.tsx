@@ -80,45 +80,44 @@ const MessageItem: React.FC<MessageItemProps> = ({
 
       <div className="message-container">
         <div className="message-content">{renderContent()}</div>
-        <div className="message-actions">
-          {message.role === "user" &&
-            (isEditing ? (
-              <>
-                <button onClick={handleSaveEdit} className="button-save">
-                  Save
+        {typeof message.content === "string" ||
+        message.content.some((content) => content.type === "text") ? (
+          <div className="message-actions">
+            {message.role === "user" &&
+              (isEditing ? (
+                <>
+                  <button onClick={handleSaveEdit} className="button-save">
+                    Save
+                  </button>
+                  <button onClick={() => setIsEditing(false)}>Cancel</button>
+                </>
+              ) : (
+                <button
+                  onClick={() => setIsEditing(true)}
+                  className="button-edit"
+                >
+                  Edit
                 </button>
-                <button onClick={() => setIsEditing(false)}>Cancel</button>
-              </>
-            ) : (
-              <button
-                onClick={() => setIsEditing(true)}
-                className="button-edit"
-              >
-                Edit
-              </button>
-            ))}
+              ))}
 
-          {message.role === "assistant" && (
-            <button
-              onMouseEnter={() => setHoveredButton("regenerate")}
-              onMouseLeave={() => setHoveredButton(null)}
-              onClick={() => onRegenerate(messageIndex)}
-              className={`button-regenerate ${
-                hoveredButton === "regenerate" ? "shadow-lg" : ""
-              }`}
-            >
-              Regenerate
-            </button>
-          )}
-        </div>
+            {message.role === "assistant" && (
+              <button
+                onMouseEnter={() => setHoveredButton("regenerate")}
+                onMouseLeave={() => setHoveredButton(null)}
+                onClick={() => onRegenerate(messageIndex)}
+                className={`button-regenerate ${
+                  hoveredButton === "regenerate" ? "shadow-lg" : ""
+                }`}
+              >
+                Regenerate
+              </button>
+            )}
+          </div>
+        ) : null}
       </div>
 
       {message.role === "user" && (
-        <img
-          src="/user-avatar.png" // Update with your user avatar path
-          alt="User Avatar"
-          className="avatar"
-        />
+        <img src="/user-avatar.png" alt="User Avatar" className="avatar" />
       )}
     </div>
   );

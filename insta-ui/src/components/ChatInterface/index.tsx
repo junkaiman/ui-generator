@@ -88,24 +88,24 @@ export default function ChatInterface({ chatId }: { chatId: string }) {
   };
 
   const handleImageUpload = async (imageFile: File) => {
-    // Simulate image upload and get URL
-    const imageUrl = URL.createObjectURL(imageFile);
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      const newMessage: Message = {
+        role: "user",
+        content: [{ type: "image", image_url: reader.result as string }],
+      };
+      setMessages((prevMessages) => [...prevMessages, newMessage]);
 
-    const newMessage: Message = {
-      role: "user",
-      content: [{ type: "image", image_url: imageUrl }],
+      getChatById(chatId).then((chat: Chat | undefined) => {
+        if (chat) {
+          chat.messages.push(newMessage);
+          updateChat(chat);
+        }
+      });
+
+      getAIResponse(newMessage);
     };
-
-    setMessages((prevMessages) => [...prevMessages, newMessage]);
-
-    getChatById(chatId).then((chat: Chat | undefined) => {
-      if (chat) {
-        chat.messages.push(newMessage);
-        updateChat(chat);
-      }
-    });
-
-    getAIResponse(newMessage);
+    reader.readAsDataURL(imageFile);
   };
 
   // TODO: replace with better UI
