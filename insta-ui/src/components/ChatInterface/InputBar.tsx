@@ -16,8 +16,8 @@ const InputBar: React.FC<InputBarProps> = ({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (inputValue.trim()) {
-      onMessageSend(inputValue); // Call the onSend function with the message
-      setInputValue(""); // Clear the input after sending
+      onMessageSend(inputValue);
+      setInputValue("");
     }
   };
 
@@ -54,7 +54,7 @@ const InputBar: React.FC<InputBarProps> = ({
         }}
         placeholder="Type your message..."
         className="flex-1 border rounded-lg p-2 resize-none"
-        rows={3} // Increased the number of rows to make the textarea higher
+        rows={3}
       />
 
       <button type="submit" className="ml-2">

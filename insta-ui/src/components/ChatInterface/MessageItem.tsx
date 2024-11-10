@@ -46,7 +46,11 @@ const MessageItem: React.FC<MessageItemProps> = ({
     }
 
     if (typeof message.content === "string") {
-      return <p className="text-sm break-words">{message.content}</p>;
+      return (
+        <p className="text-sm break-words whitespace-pre-line">
+          {message.content}
+        </p>
+      );
     }
 
     return (message.content as (TextContent | ImageContent)[]).map(

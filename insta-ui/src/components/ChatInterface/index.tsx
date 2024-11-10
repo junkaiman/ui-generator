@@ -9,7 +9,6 @@ import { getChatById, updateChat } from "@/lib/db";
 export default function ChatInterface({ chatId }: { chatId: string }) {
   const [messages, setMessages] = useState<Message[]>([]);
 
-  // Load chat messages from DB
   useEffect(() => {
     if (!chatId) {
       return;
@@ -56,7 +55,9 @@ export default function ChatInterface({ chatId }: { chatId: string }) {
     setTimeout(() => {
       const aiResponse: Message = {
         role: "assistant",
-        content: "This is a placeholder response from AI.",
+        content:
+          "This is a placeholder response from AI for message:\n" +
+          message.content,
       };
       setMessages((prevMessages) => [...prevMessages, aiResponse]);
 
