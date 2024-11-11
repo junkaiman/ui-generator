@@ -16,15 +16,15 @@ const InputBar: React.FC<InputBarProps> = ({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (inputValue.trim()) {
-      onMessageSend(inputValue); // Call the onSend function with the message
-      setInputValue(""); // Clear the input after sending
+      onMessageSend(inputValue);
+      setInputValue("");
     }
   };
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]; // Get the uploaded file
+    const file = e.target.files?.[0];
     if (file) {
-      onImageUpload(file); // Call the onImageUpload function with the image file
+      onImageUpload(file);
     }
   };
 
@@ -43,12 +43,18 @@ const InputBar: React.FC<InputBarProps> = ({
         />
       </label>
 
-      <input
-        type="text"
+      <textarea
         value={inputValue}
         onChange={(e) => setInputValue(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" && !e.shiftKey) {
+            e.preventDefault();
+            handleSubmit(e as unknown as React.FormEvent);
+          }
+        }}
         placeholder="Type your message..."
-        className="flex-1 border rounded-lg p-2"
+        className="flex-1 border rounded-lg p-2 resize-none"
+        rows={3}
       />
 
       <button type="submit" className="ml-2">

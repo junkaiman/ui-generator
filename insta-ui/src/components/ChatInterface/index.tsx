@@ -1,5 +1,5 @@
 "use client";
-import { Chat, Message } from "../../lib/types";
+import { Chat, Message, TextContent, ImageContent } from "../../lib/types";
 import { useEffect, useState } from "react";
 import MessageList from "./MessageList";
 import InputBar from "./InputBar";
@@ -9,7 +9,6 @@ import { getChatById, updateChat } from "@/lib/db";
 export default function ChatInterface({ chatId }: { chatId: string }) {
   const [messages, setMessages] = useState<Message[]>([]);
 
-  // Load chat messages from DB
   useEffect(() => {
     if (!chatId) {
       return;
@@ -19,22 +18,66 @@ export default function ChatInterface({ chatId }: { chatId: string }) {
     });
   }, [chatId]);
 
-  const handleModify = (message: Message) => {
-    console.log("Modify message: ", message);
+  const handleModify = (index: number, message: Message) => {
+    setMessages((prevMessages) => {
+      const updatedMessages = prevMessages.map((msg, i) =>
+        i === index ? message : msg
+      );
+      return updatedMessages.slice(0, index + 1);
+    });
+
+    getChatById(chatId).then((chat: Chat | undefined) => {
+      if (chat) {
+        chat.messages = messages.slice(0, index + 1);
+        updateChat(chat);
+      }
+    });
+
+    getAIResponse(messages[index]);
   };
 
-  const handleRegenerate = (message: Message) => {
-    console.log("Regenerate message", message);
+  const handleRegenerate = (index: number) => {
+    setMessages((prevMessages) => {
+      return prevMessages.slice(0, index);
+    });
+
+    getChatById(chatId).then((chat: Chat | undefined) => {
+      if (chat) {
+        chat.messages = messages.slice(0, index);
+        updateChat(chat);
+      }
+    });
+
+    getAIResponse(messages[index]);
   };
 
-  const handleSendMessage = (content: string) => {
+  const getAIResponse = (message: Message) => {
+    setTimeout(() => {
+      const aiResponse: Message = {
+        role: "assistant",
+        content:
+          "This is a placeholder response from AI for message:\n" +
+          message.content,
+      };
+      setMessages((prevMessages) => [...prevMessages, aiResponse]);
+
+      getChatById(chatId).then((chat: Chat | undefined) => {
+        if (chat) {
+          chat.messages.push(aiResponse);
+          updateChat(chat);
+        }
+      });
+    }, 500);
+  };
+  const handleSendMessage = (
+    content: string | (TextContent | ImageContent)[]
+  ) => {
     const newMessage: Message = {
       role: "user",
       content: content,
     };
     setMessages((prevMessages) => [...prevMessages, newMessage]);
 
-    // Save message to DB
     getChatById(chatId).then((chat: Chat | undefined) => {
       if (chat) {
         chat.messages.push(newMessage);
@@ -42,27 +85,28 @@ export default function ChatInterface({ chatId }: { chatId: string }) {
       }
     });
 
-    // Placeholder for AI response TODO: replace it
-    setTimeout(() => {
-      const aiResponse: Message = {
-        role: "assistant",
-        content: "This is a placeholder response from AI.",
-      };
-      setMessages((prevMessages) => [...prevMessages, aiResponse]);
+    getAIResponse(newMessage);
+  };
 
-      // if AI response success, save message to DB
+  const handleImageUpload = async (imageFile: File) => {
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      const newMessage: Message = {
+        role: "user",
+        content: [{ type: "image", image_url: reader.result as string }],
+      };
+      setMessages((prevMessages) => [...prevMessages, newMessage]);
+
       getChatById(chatId).then((chat: Chat | undefined) => {
         if (chat) {
-          chat.messages.push(aiResponse);
+          chat.messages.push(newMessage);
           updateChat(chat);
         }
       });
-    }, 500); // Simulate delay for AI response
-  };
 
-  const handleImageUpload = (imageFile: File) => {
-    // TODO: Implement image upload handling here
-    console.log("Uploaded an image: ", imageFile);
+      getAIResponse(newMessage);
+    };
+    reader.readAsDataURL(imageFile);
   };
 
   // TODO: replace with better UI
