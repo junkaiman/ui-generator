@@ -1,15 +1,19 @@
+// src/lib/types.ts
+
 /**
  * LLM related types
  */
 
 interface TextContent {
-  type: string;
+  type: 'text';
   text: string;
 }
 
 interface ImageContent {
-  type: string;
-  image_url: string;
+  type: 'image_url';
+  image_url: {
+    url: string;
+  };
 }
 
 export type Role = "system" | "user" | "assistant";
@@ -20,6 +24,12 @@ interface Message {
 }
 
 type Messages = Message[];
+
+interface GenerateRequest {
+  textInput: string;
+  imageInput?: string;
+  previousCode?: string;
+}
 
 /**
  * Chat
@@ -40,4 +50,6 @@ interface ChatHeader {
   lastModified: Date;
 }
 
-export type { Message, Messages, Chat, ChatHeader, TextContent, ImageContent };
+
+
+export type { Message, Messages, Chat, ChatHeader, TextContent, ImageContent, GenerateRequest };

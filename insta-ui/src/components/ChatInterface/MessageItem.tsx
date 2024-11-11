@@ -61,11 +61,11 @@ const MessageItem: React.FC<MessageItemProps> = ({
               {(content as TextContent).text}
             </p>
           );
-        } else if (content.type === "image") {
+        } else if (content.type === "image_url") {
           return (
             <img
               key={index}
-              src={(content as ImageContent).image_url}
+              src={(content as ImageContent).image_url.url}
               alt="Message content"
               className="w-32 h-32 rounded-lg"
             />
