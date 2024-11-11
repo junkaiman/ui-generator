@@ -4,12 +4,14 @@ import "./ChatInterface.css";
 
 interface MessageItemProps {
   message: Message;
-  onModify: (message: Message) => void;
-  onRegenerate: (message: Message) => void;
+  messageIndex: number;
+  onModify: (index: number, message: Message) => void;
+  onRegenerate: (index: number) => void;
 }
 
 const MessageItem: React.FC<MessageItemProps> = ({
   message,
+  messageIndex,
   onModify,
   onRegenerate,
 }) => {
@@ -17,16 +19,45 @@ const MessageItem: React.FC<MessageItemProps> = ({
     "modify" | "regenerate" | null
   >(null);
 
+  const [isEditing, setIsEditing] = useState(false);
+  const [editContent, setEditContent] = useState(message.content);
+
+  const handleSaveEdit = () => {
+    message.content = editContent;
+    onModify(messageIndex, message);
+    setIsEditing(false);
+  };
+
   const renderContent = () => {
+    if (isEditing) {
+      return (
+        <textarea
+          value={editContent as string}
+          onChange={(e) => setEditContent(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" && !e.shiftKey) {
+              e.preventDefault();
+              handleSaveEdit();
+            }
+          }}
+          className="w-full h-32 p-2 border border-gray-300 rounded-lg text-black"
+        />
+      );
+    }
+
     if (typeof message.content === "string") {
-      return <p className="text-sm">{message.content}</p>;
+      return (
+        <p className="text-sm break-words whitespace-pre-line">
+          {message.content}
+        </p>
+      );
     }
 
     return (message.content as (TextContent | ImageContent)[]).map(
       (content, index) => {
         if (content.type === "text") {
           return (
-            <p key={index} className="text-sm">
+            <p key={index} className="text-sm break-words whitespace-pre-line">
               {(content as TextContent).text}
             </p>
           );
@@ -53,36 +84,44 @@ const MessageItem: React.FC<MessageItemProps> = ({
 
       <div className="message-container">
         <div className="message-content">{renderContent()}</div>
-        <div className="message-actions">
-          <button
-            onMouseEnter={() => setHoveredButton("modify")}
-            onMouseLeave={() => setHoveredButton(null)}
-            onClick={() => onModify(message)}
-            className={`button-modify ${
-              hoveredButton === "modify" ? "shadow-lg" : ""
-            }`}
-          >
-            Modify
-          </button>
-          <button
-            onMouseEnter={() => setHoveredButton("regenerate")}
-            onMouseLeave={() => setHoveredButton(null)}
-            onClick={() => onRegenerate(message)}
-            className={`button-regenerate ${
-              hoveredButton === "regenerate" ? "shadow-lg" : ""
-            }`}
-          >
-            Regenerate
-          </button>
-        </div>
+        {typeof message.content === "string" ||
+        message.content.some((content) => content.type === "text") ? (
+          <div className="message-actions">
+            {message.role === "user" &&
+              (isEditing ? (
+                <>
+                  <button onClick={handleSaveEdit} className="button-save">
+                    Save
+                  </button>
+                  <button onClick={() => setIsEditing(false)}>Cancel</button>
+                </>
+              ) : (
+                <button
+                  onClick={() => setIsEditing(true)}
+                  className="button-edit"
+                >
+                  Edit
+                </button>
+              ))}
+
+            {message.role === "assistant" && (
+              <button
+                onMouseEnter={() => setHoveredButton("regenerate")}
+                onMouseLeave={() => setHoveredButton(null)}
+                onClick={() => onRegenerate(messageIndex)}
+                className={`button-regenerate ${
+                  hoveredButton === "regenerate" ? "shadow-lg" : ""
+                }`}
+              >
+                Regenerate
+              </button>
+            )}
+          </div>
+        ) : null}
       </div>
 
       {message.role === "user" && (
-        <img
-          src="/user-avatar.png" // Update with your user avatar path
-          alt="User Avatar"
-          className="avatar"
-        />
+        <img src="/user-avatar.png" alt="User Avatar" className="avatar" />
       )}
     </div>
   );

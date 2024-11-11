@@ -6,20 +6,23 @@ import { useEffect, useState } from "react";
 import { ChatHeader, Messages } from "@/lib/types";
 import { Button } from "../ui/button";
 
-export default function SideBar() {
+export default function SideBar({ chatId }: { chatId: string }) {
   const router = useRouter();
 
-  const useChats = () => {
-    const [chats, setChats] = useState([] as ChatHeader[]);
-    useEffect(() => {
-      getChats().then((res: ChatHeader[]) => {
-        setChats(res);
+  const [chats, setChats] = useState([] as ChatHeader[]);
+
+  const updateChats = () => {
+    getChats().then((chats) => {
+      chats.sort((a, b) => {
+        return b.lastModified.getTime() - a.lastModified.getTime();
       });
-    }, [chats]);
-    return chats;
+      setChats(chats);
+    });
   };
 
-  const chats = useChats();
+  useEffect(() => {
+    updateChats();
+  }, []);
 
   const addNewChat = async () => {
     const messages: Messages = [];
@@ -34,10 +37,11 @@ export default function SideBar() {
   const onChatDelete = (chatId: string) => {
     console.log("Delete chat", chatId);
     deleteChatById(chatId);
+    updateChats();
   };
 
   return (
-    <div>
+    <div className="h-full overflow-y-auto">
       <div className="flex justify-center m-2">
         <Button
           className="flex items-center space-x-2 bg-gray-600 text-white py-2 px-4 rounded-full"
@@ -48,21 +52,16 @@ export default function SideBar() {
         </Button>
       </div>
 
-      {chats
-        .sort(
-          (a, b) =>
-            new Date(b.lastModified).getTime() -
-            new Date(a.lastModified).getTime()
-        )
-        .map((chat) => (
-          <SideBarItem
-            key={chat.id}
-            chatId={chat.id}
-            chatTitle={chat.description}
-            onChatSelect={onChatSelect}
-            onChatDelete={onChatDelete}
-          />
-        ))}
+      {chats.map((chat) => (
+        <SideBarItem
+          key={chat.id}
+          chatId={chat.id}
+          chatTitle={chat.description}
+          onCurrentChat={chat.id === chatId}
+          onChatSelect={onChatSelect}
+          onChatDelete={onChatDelete}
+        />
+      ))}
     </div>
   );
 }
