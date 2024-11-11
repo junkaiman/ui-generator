@@ -36,6 +36,8 @@ jobs:
       - name: Verify build
         working-directory: ${{ env.FRONTEND_PATH }}
         run: npm run build
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
 
       - name: Run tests
         working-directory: ${{ env.FRONTEND_PATH }}
