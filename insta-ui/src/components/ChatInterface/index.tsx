@@ -93,7 +93,14 @@ export default function ChatInterface({ chatId }: { chatId: string }) {
     reader.onloadend = () => {
       const newMessage: Message = {
         role: "user",
-        content: [{ type: "image", image_url: reader.result as string }],
+        content: [
+          {
+            type: "image_url",
+            image_url: {
+              url: reader.result as string,
+            },
+          },
+        ],
       };
       setMessages((prevMessages) => [...prevMessages, newMessage]);
 
