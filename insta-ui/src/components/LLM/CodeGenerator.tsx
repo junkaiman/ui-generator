@@ -1,8 +1,7 @@
-// app/components/CodeGenerator.tsx
 'use client';
 
 import { useState } from 'react';
-import { useCodeGeneration } from '@/app/hooks/useCodeGeneration';
+import { useCodeGeneration } from '@/components/LLM/hooks/useCodeGeneration';
 
 export default function CodeGenerator() {
     const [textInput, setTextInput] = useState('');
