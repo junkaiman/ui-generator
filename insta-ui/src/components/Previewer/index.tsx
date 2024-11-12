@@ -1,6 +1,6 @@
 "use client"; // Add this at the very top of the file
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { LiveProvider, LivePreview, LiveError } from "react-live";
 import MonacoEditor from "react-monaco-editor";
 import { Card } from "@/components/ui/card";
@@ -8,6 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PreviewerTabs } from "@/lib/enums";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCopy } from "@fortawesome/free-regular-svg-icons";
+import * as monaco from "monaco-editor";
 
 const initialCode: string = `
 function App() {
@@ -51,6 +52,34 @@ export default function Previewer() {
   const [error, setError] = useState<string | null>(null); // Error state
 
   const errorHandler = new ErrorHandler();
+
+  // Set up Monaco with a custom theme and JavaScript settings
+  useEffect(() => {
+    monaco.editor.defineTheme("customDarkTheme", {
+      base: "vs-dark",
+      inherit: true,
+      rules: [
+        { token: "comment", foreground: "6A9955" },
+        { token: "keyword", foreground: "569CD6" },
+        { token: "identifier", foreground: "9CDCFE" },
+        { token: "number", foreground: "B5CEA8" },
+        { token: "string", foreground: "CE9178" },
+      ],
+      colors: {
+        "editor.background": "#1E1E1E",
+      },
+    });
+    monaco.editor.setTheme("customDarkTheme");
+
+    monaco.languages.typescript.javascriptDefaults.setDiagnosticsOptions({
+      noSemanticValidation: false,
+      noSyntaxValidation: false,
+    });
+    monaco.languages.typescript.javascriptDefaults.setCompilerOptions({
+      target: monaco.languages.typescript.ScriptTarget.ES2020,
+      allowNonTsExtensions: true,
+    });
+  }, []);
 
   // Handle code change from MonacoEditor
   const handleCodeChange = (newCode: string | undefined) => {
@@ -111,7 +140,7 @@ export default function Previewer() {
                 height="100%"
                 width="100%"
                 language="javascript"
-                theme="vs-dark"
+                theme="customDarkTheme"
                 value={code}
                 onChange={(value) => handleCodeChange(value || "")}
                 options={{
