@@ -1,4 +1,3 @@
-// app/server/llm/prompts.ts
 import { Message, TextContent, ImageContent } from '@/lib/types'
 
 export function generateMessages(textInput: string, imageInput?: string, previousCode?: string): Message[] {

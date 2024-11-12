@@ -1,7 +1,7 @@
 import OpenAI from 'openai';
-import { generateMessages } from '@/app/server/llm/prompts';
+import { generateMessages } from '@/server/prompts';
 import { GenerateRequest, Message } from '@/lib/types';
-import { MODEL } from '@/app/server/llm/constants';
+import { MODEL } from '@/server/constants';
 import type { ChatCompletionMessageParam } from 'openai/resources/chat/completions';
 
 const openai = new OpenAI({
