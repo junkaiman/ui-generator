@@ -5,8 +5,11 @@ import MessageList from "./MessageList";
 import InputBar from "./InputBar";
 import "./ChatInterface.css";
 import { getChatById, updateChat } from "@/lib/db";
+import { useSearchParams } from "next/navigation";
 
-export default function ChatInterface({ chatId }: { chatId: string }) {
+export default function ChatInterface() {
+  const searchParams = useSearchParams();
+  const chatId = searchParams.get("c") || "";
   const [messages, setMessages] = useState<Message[]>([]);
 
   useEffect(() => {

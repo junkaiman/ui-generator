@@ -7,11 +7,7 @@ import {
 } from "@/components/ui/resizable";
 import dynamic from "next/dynamic";
 
-export default async function Main({
-  params,
-}: {
-  params: Promise<{ slug: string }>;
-}) {
+export default function Main() {
   const Previewer = dynamic(() => import("@/components/Previewer"), {
     ssr: false,
   });
@@ -24,8 +20,6 @@ export default async function Main({
     ssr: false,
   });
 
-  const slug = (await params)?.slug;
-
   return (
     <>
       <ProgressOverlay />
@@ -34,13 +28,13 @@ export default async function Main({
         <div className="flex-1 overflow-hidden">
           <ResizablePanelGroup direction="horizontal">
             <ResizablePanel defaultSize={20} minSize={10} maxSize={30}>
-              <SideBar chatId={slug} />
+              <SideBar />
             </ResizablePanel>
 
             <ResizableHandle withHandle />
 
             <ResizablePanel defaultSize={40} minSize={30} maxSize={70}>
-              <ChatInterface chatId={slug} />
+              <ChatInterface />
             </ResizablePanel>
 
             <ResizableHandle withHandle />
