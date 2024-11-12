@@ -131,11 +131,17 @@ export default function ChatInterface({ chatId }: { chatId: string }) {
 
   return (
     <div className="chat-interface">
-      <MessageList
-        messages={messages}
-        onModify={handleModify}
-        onRegenerate={handleRegenerate}
-      />
+      {messages.length === 0 ? (
+        <div className="flex justify-center items-center h-full">
+          <h1 className="text-2xl text-gray-500">{"No message yet"}</h1>
+        </div>
+      ) : (
+        <MessageList
+          messages={messages}
+          onModify={handleModify}
+          onRegenerate={handleRegenerate}
+        />
+      )}
 
       <InputBar
         onMessageSend={handleSendMessage}
