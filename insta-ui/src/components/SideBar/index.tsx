@@ -1,15 +1,20 @@
 "use client";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import SideBarItem from "./SideBarItem";
 import { deleteChatById, getChats, addChat } from "@/lib/db";
 import { useEffect, useState } from "react";
 import { ChatHeader, Messages } from "@/lib/types";
 import { Button } from "../ui/button";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCircleNotch } from "@fortawesome/free-solid-svg-icons";
 
-export default function SideBar({ chatId }: { chatId: string }) {
+export default function SideBar() {
+  const searchParams = useSearchParams();
+  const chatId = searchParams.get("c") || "";
   const router = useRouter();
 
   const [chats, setChats] = useState([] as ChatHeader[]);
+  const [loading, setLoading] = useState(true);
 
   const updateChats = () => {
     getChats().then((chats) => {
@@ -22,16 +27,17 @@ export default function SideBar({ chatId }: { chatId: string }) {
 
   useEffect(() => {
     updateChats();
-  }, []);
+    setLoading(false);
+  }, [chatId]);
 
   const addNewChat = async () => {
     const messages: Messages = [];
     const res = await addChat(messages);
-    router.push(`/c/${res}`);
+    router.push(`/?c=${res}`);
   };
 
   const onChatSelect = (chatId: string) => {
-    router.push(`/c/${chatId}`);
+    router.push(`/?c=${chatId}`);
   };
 
   const onChatDelete = (chatId: string) => {
@@ -51,6 +57,12 @@ export default function SideBar({ chatId }: { chatId: string }) {
           <span>New Chat</span>
         </Button>
       </div>
+
+      {loading && (
+        <div className="flex flex-col justify-center text-center m-4">
+          <FontAwesomeIcon icon={faCircleNotch} spin size="2x" />
+        </div>
+      )}
 
       {chats.map((chat) => (
         <SideBarItem
