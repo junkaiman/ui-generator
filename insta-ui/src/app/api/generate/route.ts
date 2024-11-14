@@ -1,5 +1,5 @@
 import OpenAI from 'openai';
-import { generateMessages, generateReviseMessages } from '@/server/prompts';
+import { generateMessages} from '@/server/prompts';
 import { GenerateRequest, Message } from '@/lib/types';
 import { MODEL } from '@/server/constants';
 import type { ChatCompletionMessageParam } from 'openai/resources/chat/completions';
