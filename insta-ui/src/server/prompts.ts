@@ -7,8 +7,9 @@ export function generateMessages(textInput: string, imageInput?: string, previou
             content: `You are a React component generator. Generate only valid, compilable React code.
       Follow these requirements:
       - Use only React and standard packages
-      - Component must be compilable
-      - Do not include import statements, access any package inline 
+      - Component must be compilable and should not include import statements
+      - When referencing React functions or hooks, always use the inline syntax, like "React.useState" or "React.useEffect"
+      - Do not reference functions or hooks directly (e.g., do not use "useState" alone); always specify "React" before the function name
       - Include 'render<>' statement for rednering the component at the end, not a render function
       - Ensure proper JSX syntax`
         }
