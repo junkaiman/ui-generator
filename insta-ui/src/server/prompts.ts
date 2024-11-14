@@ -1,15 +1,16 @@
 import { Message, TextContent, ImageContent } from '@/lib/types'
 
-export function generateMessages(textInput: string, imageInput?: string, previousCode?: string): Message[] {
+export function generateMessages(textInput: string, imageInput?: string, previousCode?: string, topicName?: boolean): {messages: Message[], topicMessages: Message[]} {
     const messages: Message[] = [
         {
             role: 'system',
             content: `You are a React component generator. Generate only valid, compilable React code.
       Follow these requirements:
       - Use only React and standard packages
-      - Component must be compilable
-      - Include 'import React' at the start
-      - Use 'export default' for the component
+      - Component must be compilable and should not include import statements
+      - When referencing React functions or hooks, always use the inline syntax, like "React.useState" or "React.useEffect"
+      - Do not reference functions or hooks directly (e.g., do not use "useState" alone); always specify "React" before the function name
+      - Include 'render<>' statement for rednering the component at the end, not a render function
       - Ensure proper JSX syntax`
         }
     ];
@@ -43,5 +44,32 @@ export function generateMessages(textInput: string, imageInput?: string, previou
         });
     }
 
-    return messages;
+    const topicMessages: Message[] = []
+    if (topicName) {
+        topicMessages.push({
+            role: 'system',
+            content: `You are a request title creator. You have to help the user summarize a request in no more than 6 words.`
+        });
+
+        const userContent: (TextContent | ImageContent)[] = [
+            { type: 'text', text: `Create a request title based on this description: ${textInput}` }
+        ];
+    
+        if (imageInput) {
+            userContent.push({
+                type: 'image_url',
+                image_url: {
+                    url: imageInput
+                }
+            } as ImageContent);
+        }
+        
+        topicMessages.push({
+            role: 'user',
+            content: userContent
+        });
+    
+    }
+
+    return {messages, topicMessages};
 }

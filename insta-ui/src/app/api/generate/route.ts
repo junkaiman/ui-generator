@@ -1,5 +1,5 @@
 import OpenAI from 'openai';
-import { generateMessages } from '@/server/prompts';
+import { generateMessages} from '@/server/prompts';
 import { GenerateRequest, Message } from '@/lib/types';
 import { MODEL } from '@/server/constants';
 import type { ChatCompletionMessageParam } from 'openai/resources/chat/completions';
@@ -25,10 +25,11 @@ export async function POST(req: Request) {
             );
         }
 
-        const messages = generateMessages(
+        const {messages, topicMessages} = generateMessages(
             input.textInput,
             input.imageInput,
-            input.previousCode
+            input.previousCode,
+            input.topicName,
         );
 
         const completion = await openai.chat.completions.create({
@@ -40,8 +41,16 @@ export async function POST(req: Request) {
         const codeMatch = content?.match(/```(?:javascript|jsx)?\n([\s\S]*?)```/);
         const code = codeMatch ? codeMatch[1].trim() : content;
 
+        const topicName = input.topicName? (await openai.chat.completions.create({
+            model: MODEL,
+            messages: transformMessages(topicMessages),
+        })).choices[0].message.content : undefined;
+
+
+        console.log(topicName);
+
         return new Response(
-            JSON.stringify({ code }),
+            JSON.stringify({ code: code, topicName: topicName}),
             {
                 status: 200,
                 headers: {

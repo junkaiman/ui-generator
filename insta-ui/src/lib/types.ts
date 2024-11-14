@@ -29,6 +29,7 @@ interface GenerateRequest {
   textInput: string;
   imageInput?: string;
   previousCode?: string;
+  topicName: boolean;
 }
 
 /**
