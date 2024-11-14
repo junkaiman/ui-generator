@@ -49,18 +49,6 @@ export async function POST(req: Request) {
 
         console.log(topicName);
 
-        // const reviseMessages = generateReviseMessages(code as string);
-
-        // const reviseCompletion = await openai.chat.completions.create({
-        //     model: MODEL,
-        //     messages: transformMessages(reviseMessages),
-        // });
-
-        // const reviseContent = reviseCompletion.choices[0].message.content;
-        // const reviseCodeMatch = reviseContent?.match(/```(?:javascript|jsx)?\n([\s\S]*?)```/);
-        // const reviseCode = reviseCodeMatch ? reviseCodeMatch[1].trim() : reviseContent;
-
-
         return new Response(
             JSON.stringify({ code: code, topicName: topicName}),
             {

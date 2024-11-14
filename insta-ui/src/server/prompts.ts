@@ -73,30 +73,3 @@ export function generateMessages(textInput: string, imageInput?: string, previou
 
     return {messages, topicMessages};
 }
-
-// export function generateReviseMessages(code: string): Message[] {
-//     const messages: Message[] = [
-//         {
-//             role: 'system',
-//             content: `You are a React component code debugger. Keep the original structure and style of the code as much as possible, detect any errors, and change it into valid, compilable React code.  
-//       Follow these requirements:
-//       - Use only React and standard packages
-//       - Component must be compilable
-//       - Include 'import React' at the start
-//       - Use 'export default' for the component
-//       - Ensure proper JSX syntax`
-//         }
-//     ];
-
-//     // Add user message with text and optionally image
-//     const userContent: (TextContent | ImageContent)[] = [
-//         { type: 'text', text: `Revise the provided code: ${code}` }
-//     ];
-
-//     messages.push({
-//         role: 'user',
-//         content: userContent
-//     });
-
-//     return messages;
-// }
