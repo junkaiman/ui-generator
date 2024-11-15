@@ -47,33 +47,47 @@ export default function SideBar() {
   };
 
   return (
-    <div className="h-full overflow-y-auto">
-      <div className="flex justify-center m-2">
-        <Button
-          className="flex items-center space-x-2 bg-gray-600 text-white py-2 px-4 rounded-full"
-          onClick={addNewChat}
-        >
-          <span className="text-xl">+</span>
-          <span>New Chat</span>
-        </Button>
+    <>
+      {/* Desktop Layout */}
+      <div className="hidden sm:flex sm:flex-col sm:h-full sm:overflow-y-auto">
+        <div className="flex justify-center m-2">
+          <Button
+            className="flex items-center space-x-2 bg-gray-600 text-white py-2 px-4 rounded-full"
+            onClick={addNewChat}
+          >
+            <span className="text-xl">+</span>
+            <span>New Chat</span>
+          </Button>
+        </div>
+
+        {loading && (
+          <div className="flex flex-col justify-center text-center m-4">
+            <FontAwesomeIcon icon={faCircleNotch} spin size="2x" />
+          </div>
+        )}
+
+        {chats.map((chat) => (
+          <SideBarItem
+            key={chat.id}
+            chatId={chat.id}
+            chatTitle={chat.description}
+            onCurrentChat={chat.id === chatId}
+            onChatSelect={onChatSelect}
+            onChatDelete={onChatDelete}
+          />
+        ))}
       </div>
 
-      {loading && (
-        <div className="flex flex-col justify-center text-center m-4">
-          <FontAwesomeIcon icon={faCircleNotch} spin size="2x" />
-        </div>
-      )}
-
-      {chats.map((chat) => (
-        <SideBarItem
-          key={chat.id}
-          chatId={chat.id}
-          chatTitle={chat.description}
-          onCurrentChat={chat.id === chatId}
-          onChatSelect={onChatSelect}
-          onChatDelete={onChatDelete}
-        />
-      ))}
-    </div>
+      {/* Mobile Layout */}
+      <div className="sm:hidden flex flex-col overflow-y-auto">
+        <Button
+          variant={"ghost"}
+          onClick={addNewChat}
+          className="font-bold bg-gray-50 rounded-none"
+        >
+          + New Chat
+        </Button>
+      </div>
+    </>
   );
 }
