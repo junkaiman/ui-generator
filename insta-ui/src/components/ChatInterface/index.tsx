@@ -6,11 +6,13 @@ import InputBar from "./InputBar";
 import "./ChatInterface.css";
 import { getChatById, updateChat } from "@/lib/db";
 import { useSearchParams } from "next/navigation";
+import { fetchAIResponse } from "@/app/api/generate/utils";
 
 export default function ChatInterface() {
   const searchParams = useSearchParams();
   const chatId = searchParams.get("c") || "";
   const [messages, setMessages] = useState<Message[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (!chatId) {
@@ -54,14 +56,24 @@ export default function ChatInterface() {
     getAIResponse(messages[index]);
   };
 
-  const getAIResponse = (message: Message) => {
-    setTimeout(() => {
+  const getAIResponse = async (message: Message) => {
+    setIsLoading(true);
+    let res: Response | undefined = undefined;
+
+    if (typeof message.content === "string") {
+      res = await fetchAIResponse(message.content);
+    } else {
+      // TODO: support image input
+      // TODO: support previous code
+    }
+    setIsLoading(false);
+
+    if (res) {
       const aiResponse: Message = {
         role: "assistant",
-        content:
-          "This is a placeholder response from AI for message:\n" +
-          message.content,
+        content: (await res.json()).code,
       };
+
       setMessages((prevMessages) => [...prevMessages, aiResponse]);
 
       getChatById(chatId).then((chat: Chat | undefined) => {
@@ -70,7 +82,7 @@ export default function ChatInterface() {
           updateChat(chat);
         }
       });
-    }, 500);
+    }
   };
   const handleSendMessage = (
     content: string | (TextContent | ImageContent)[]
@@ -141,6 +153,7 @@ export default function ChatInterface() {
       ) : (
         <MessageList
           messages={messages}
+          isLoading={isLoading}
           onModify={handleModify}
           onRegenerate={handleRegenerate}
         />
