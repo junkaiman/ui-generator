@@ -6,7 +6,7 @@ import Link from "next/link";
 export default function Header() {
   return (
     <div>
-      <div className="flex justify-between items-center p-4 bg-gray-100">
+      <div className="flex justify-between items-center p-4 pb-2 bg-gray-100">
         <Link href="/" shallow>
           <div className="text-2xl font-bold">📐 Insta UI</div>
         </Link>
