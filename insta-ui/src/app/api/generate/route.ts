@@ -1,12 +1,9 @@
-import OpenAI from 'openai';
-import { generateMessages} from '@/server/prompts';
+import { generateMessages, generatePromptRevisionMessages } from '@/server/prompts';
 import { GenerateRequest, Message } from '@/lib/types';
 import { MODEL } from '@/server/constants';
 import type { ChatCompletionMessageParam } from 'openai/resources/chat/completions';
+import { openai } from '@/server/config';
 
-const openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY
-});
 
 function transformMessages(messages: Message[]): ChatCompletionMessageParam[] {
     return messages as ChatCompletionMessageParam[];
@@ -25,8 +22,22 @@ export async function POST(req: Request) {
             );
         }
 
-        const {messages, topicMessages} = generateMessages(
+        // First, get the refined prompt
+        const revisionMessages = generatePromptRevisionMessages(
             input.textInput,
+            input.imageInput
+        );
+
+        const refinedPromptCompletion = await openai.chat.completions.create({
+            model: MODEL,
+            messages: transformMessages(revisionMessages),
+        });
+        const refinedPrompt = refinedPromptCompletion.choices[0].message.content ?? input.textInput;
+        // console.log("Refined prompt:", refinedPrompt);
+
+        // Use the refined prompt to generate the component
+        const { messages, topicMessages } = generateMessages(
+            refinedPrompt, // Use refined prompt instead of original textInput
             input.imageInput,
             input.previousCode,
             input.topicName,
@@ -41,16 +52,19 @@ export async function POST(req: Request) {
         const codeMatch = content?.match(/```(?:javascript|jsx)?\n([\s\S]*?)```/);
         const code = codeMatch ? codeMatch[1].trim() : content;
 
-        const topicName = input.topicName? (await openai.chat.completions.create({
-            model: MODEL,
-            messages: transformMessages(topicMessages),
-        })).choices[0].message.content : undefined;
-
-
-        console.log(topicName);
+        const topicName = input.topicName
+            ? (await openai.chat.completions.create({
+                model: MODEL,
+                messages: transformMessages(topicMessages),
+            })).choices[0].message.content
+            : undefined;
 
         return new Response(
-            JSON.stringify({ code: code, topicName: topicName}),
+            JSON.stringify({
+                code,
+                topicName,
+                refinedPrompt, // Optional: Include the refined prompt in response
+            }),
             {
                 status: 200,
                 headers: {
