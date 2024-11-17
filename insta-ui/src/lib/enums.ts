@@ -3,6 +3,11 @@ export enum PreviewerTabs {
   Code = "code",
 }
 
+export enum MobileTabs {
+  ChatInterface = "chat-interface",
+  Preview = "preview",
+}
+
 /**
  * DB related enums
  */
