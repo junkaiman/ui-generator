@@ -1,20 +1,8 @@
-import {Ratelimit} from "@upstash/ratelimit";
-import {Redis} from "@upstash/redis";
 import { generateMessages, generatePromptRevisionMessages} from '@/server/prompts';
 import { GenerateRequest, Message } from '@/lib/types';
 import { MODEL } from '@/server/constants';
 import type { ChatCompletionMessageParam } from 'openai/resources/chat/completions';
-import { openai } from '@/server/config';
-
-const redis = new Redis({
-    url: process.env.UPSTASH_REDIS_REST_URL,
-    token: process.env.UPSTASH_REDIS_REST_TOKEN,
-});
-
-const ratelimit = new Ratelimit({
-    redis: redis,
-    limiter: Ratelimit.fixedWindow(20, "3600 s"),
-});
+import { openai, ratelimit } from '@/server/config';
 
 function transformMessages(messages: Message[]): ChatCompletionMessageParam[] {
     return messages as ChatCompletionMessageParam[];
@@ -24,6 +12,7 @@ export const maxDuration = 30;
 
 export async function POST(req: Request) {
     const host = req.headers.get('host');
+    // remove if condition if want to test ratelimiter on localhost
     if (host && !(host.startsWith('localhost') || host.startsWith('127.0.0.1'))) {
         const result = await ratelimit.limit(req.headers.get("x-forwarded-for") as string);
         if (!result.success) {
