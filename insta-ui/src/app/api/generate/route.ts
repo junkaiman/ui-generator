@@ -1,12 +1,13 @@
-import OpenAI from 'openai';
+// import OpenAI from 'openai';
 import { generateMessages} from '@/server/prompts';
 import { GenerateRequest, Message } from '@/lib/types';
 import { MODEL } from '@/server/constants';
 import type { ChatCompletionMessageParam } from 'openai/resources/chat/completions';
+import { openai } from '@/server/config';
 
-const openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY
-});
+// const openai = new OpenAI({
+//     apiKey: process.env.OPENAI_API_KEY
+// });
 
 function transformMessages(messages: Message[]): ChatCompletionMessageParam[] {
     return messages as ChatCompletionMessageParam[];
@@ -47,7 +48,7 @@ export async function POST(req: Request) {
         })).choices[0].message.content : undefined;
 
 
-        console.log(topicName);
+        console.log("topicName:", topicName);
 
         return new Response(
             JSON.stringify({ code: code, topicName: topicName}),

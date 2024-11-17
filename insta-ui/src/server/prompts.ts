@@ -11,7 +11,14 @@ export function generateMessages(textInput: string, imageInput?: string, previou
       - When referencing React functions or hooks, always use the inline syntax, like "React.useState" or "React.useEffect"
       - Do not reference functions or hooks directly (e.g., do not use "useState" alone); always specify "React" before the function name
       - Include 'render<>' statement for rednering the component at the end, not a render function
-      - Ensure proper JSX syntax`
+      - Ensure proper JSX syntax
+      - Include inline styles or CSS-in-JS that make the design visually appealing
+      - Use modern design principles such as:
+          - Box shadows for depth
+          - Smooth transitions and animations
+          - Rounded corners for buttons and containers
+          - Responsive design for different screen sizes
+          - Elegant typography with readable fonts and sizes`
         }
     ];
 
