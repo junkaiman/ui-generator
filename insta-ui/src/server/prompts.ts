@@ -4,8 +4,7 @@ export function generateMessages(
     textInput: string,
     imageInput?: string,
     previousCode?: string,
-    topicName?: boolean
-): { messages: Message[], topicMessages: Message[] } {
+): Message[] {
     const messages: Message[] = [
         {
             role: 'system',
@@ -55,35 +54,46 @@ export function generateMessages(
         content: userContent
     });
 
-    const topicMessages: Message[] = []
-    if (topicName) {
-        topicMessages.push({
-            role: 'system',
-            content: `You are a request title creator. You have to help the user summarize a request in no more than 6 words.`
-        });
-
-        const userContent: (TextContent | ImageContent)[] = [
-            { type: 'text', text: `Create a request title based on this description: ${textInput}` }
-        ];
-
-        if (imageInput) {
-            userContent.push({
-                type: 'image_url',
-                image_url: {
-                    url: imageInput
-                }
-            } as ImageContent);
-        }
-
-        topicMessages.push({
-            role: 'user',
-            content: userContent
-        });
-
-    }
-
-    return { messages, topicMessages };
+    return messages;
 }
+
+// export function generatePromptRevisionMessages(
+//     textInput: string, 
+//     imageInput?: string,
+//     previousCode?: string
+//   ): Message[] {
+//     return [
+//       {
+//         role: 'system',
+//         content: `You are a prompt engineer specializing in UI component generation.
+//         Help refine user requests into detailed, specific prompts that will result in better React components.
+//         Focus on:
+//         - Visual design details
+//         - Component functionality
+//         - User interaction patterns
+//         - Accessibility considerations
+//         - Responsive design requirements
+//         ${previousCode ? '- Integration with existing code' : ''}`
+//       },
+//       {
+//         role: 'user',
+//         content: [
+//           {
+//             type: 'text',
+//             text: previousCode
+//               ? `Refine this component request, considering both the new requirements and existing code:
+//                  New requirements: ${textInput}
+//                  Existing code: ${previousCode}`
+//               : `Refine this component request into a detailed prompt: ${textInput}`
+//           },
+//           ...(imageInput ? [{
+//             type: 'image_url',
+//             image_url: { url: imageInput }
+//           } as ImageContent] : [])
+//         ]
+//       }
+//     ];
+//   }
 
 export function generatePromptRevisionMessages(
     textInput: string, 
@@ -94,14 +104,19 @@ export function generatePromptRevisionMessages(
       {
         role: 'system',
         content: `You are a prompt engineer specializing in UI component generation.
-        Help refine user requests into detailed, specific prompts that will result in better React components.
-        Focus on:
-        - Visual design details
-        - Component functionality
-        - User interaction patterns
-        - Accessibility considerations
-        - Responsive design requirements
-        ${previousCode ? '- Integration with existing code' : ''}`
+          Help refine user requests into detailed, specific prompts that will result in better React components.
+          Focus on:
+          - Visual design details
+          - Component functionality
+          - User interaction patterns
+          - Accessibility considerations
+          - Responsive design requirements
+          ${previousCode ? '- Integration with existing code' : ''}
+          
+          Additionally, generate a concise title (6 words or less) summarizing the user's request.
+          Format the output as a JSON object containing two fields:
+          - "refined_prompt": The improved detailed prompt.
+          - "title": The concise title.`
       },
       {
         role: 'user',
@@ -109,10 +124,10 @@ export function generatePromptRevisionMessages(
           {
             type: 'text',
             text: previousCode
-              ? `Refine this component request, considering both the new requirements and existing code:
-                 New requirements: ${textInput}
-                 Existing code: ${previousCode}`
-              : `Refine this component request into a detailed prompt: ${textInput}`
+              ? `Refine this component request and include a title, considering both the new requirements and existing code:
+                New requirements: ${textInput}
+                Existing code: ${previousCode}`
+              : `Refine this component request and include a title: ${textInput}`
           },
           ...(imageInput ? [{
             type: 'image_url',
@@ -122,3 +137,4 @@ export function generatePromptRevisionMessages(
       }
     ];
   }
+  
