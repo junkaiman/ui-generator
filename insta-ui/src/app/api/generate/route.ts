@@ -64,7 +64,8 @@ export async function POST(req: Request) {
         const {refinedPrompt, topicName}  = refinedPromptCompletion.choices[0].message.content 
                                             ? extractRefinedPromptAndTitle(refinedPromptCompletion.choices[0].message.content, input.textInput)
                                             : {refinedPrompt: input.textInput, topicName: 'React UI Component Code generation.'};
-        console.log("Refined prompt:", refinedPrompt);
+        // console.log(revisionMessages);
+        // console.log(refinedPromptCompletion.choices[0])
 
         // Use the refined prompt to generate the component
         const messages = generateMessages(
@@ -72,7 +73,7 @@ export async function POST(req: Request) {
             input.imageInput,
             input.previousMessages,
         );
-        console.log("messages: ",messages)
+        //console.log("messages: ",messages)
 
         const completion = await openai.chat.completions.create({
             model: MODEL,
