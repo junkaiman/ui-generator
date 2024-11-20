@@ -1,77 +1,82 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>LLM Service Test</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
+
 <body class="bg-gray-50">
     <div class="container mx-auto px-4 py-8 max-w-4xl">
         <h1 class="text-3xl font-bold mb-8">LLM Service Test</h1>
-        
+
         <div class="bg-white rounded-lg shadow p-6 mb-8">
             <h2 id="topicName" class="text-xl font-semibold mb-4">Generate UI Component</h2>
-            
+
             <div class="mb-4">
                 <label class="block text-sm font-medium text-gray-700 mb-2">
                     Description:
                 </label>
-                <textarea 
-                    id="input"
-                    class="w-full p-2 border rounded-md"
-                    rows="4"
-                    placeholder="Describe the component you want..."
-                >Create a button that looks like this image</textarea>
+                <textarea id="input" class="w-full p-2 border rounded-md" rows="4"
+                    placeholder="Describe the component you want...">Create a button that looks like this image</textarea>
             </div>
 
             <div class="mb-4">
                 <label class="block text-sm font-medium text-gray-700 mb-2">
                     Image URL:
                 </label>
-                <input 
-                    type="text" 
-                    id="imageInput"
-                    class="w-full p-2 border rounded-md"
-                    placeholder="Enter image URL..."
-                    value="https://wallpapers.com/images/high/gru-despicable-me-minion-iphone-zz1jrsybwxtbkz3r.webp"
-                />
+                <input type="text" id="imageInput" class="w-full p-2 border rounded-md" placeholder="Enter image URL..."
+                    value="https://wallpapers.com/images/high/gru-despicable-me-minion-iphone-zz1jrsybwxtbkz3r.webp" />
                 <div id="imagePreview" class="mt-2"></div>
             </div>
 
-            <div class="mb-4">
+            <!-- <div class="mb-4">
                 <label class="block text-sm font-medium text-gray-700 mb-2">
                     Previous Code (optional):
                 </label>
-                <textarea 
-                    id="previousCode"
-                    class="w-full p-2 border rounded-md"
-                    rows="4"
-                    placeholder="Enter previous code if you want to modify existing component..."
-                ></textarea>
-            </div>
+                <textarea id="previousCode" class="w-full p-2 border rounded-md" rows="4"
+                    placeholder="Enter previous code if you want to modify existing component..."></textarea>
+            </div> -->
 
-            <button 
-                onclick="generateCode()"
+            <button onclick="generateCode()"
                 class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-                id="generateButton"
-            >
+                id="generateButton">
                 Generate Code
             </button>
+            <button onclick="clearConversation()"
+                class="ml-4 bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2">
+                Clear Conversation
+            </button>
         </div>
-
+        <div class="bg-white rounded-lg shadow p-6 mb-8">
+            <h2 class="text-xl font-semibold mb-4">Previous Messages</h2>
+            <div id="messagesContainer" class="space-y-4 mb-4">
+                <!-- Messages will be displayed here -->
+            </div>
+        </div>
         <div class="bg-white rounded-lg shadow p-6">
             <h2 class="text-xl font-semibold mb-4">Output</h2>
             <div id="status" class="mb-4 hidden"></div>
             <pre id="output" class="bg-gray-50 p-4 rounded-md text-sm overflow-x-auto">Output will appear here...</pre>
         </div>
+        <div class="bg-white rounded-lg shadow p-6 mt-8">
+            <h2 class="text-xl font-semibold mb-4">Performance Metrics</h2>
+            <div id="metrics" class="space-y-2">
+                <div>Total Time: <span id="totalTime">-</span></div>
+                <div>Prompt Revision Time: <span id="promptRevisionTime">-</span></div>
+                <div>Code Generation Time: <span id="generationTime">-</span></div>
+            </div>
+        </div>
+
     </div>
 
     <script>
         const imageInput = document.getElementById('imageInput');
         const imagePreview = document.getElementById('imagePreview');
         let needTopicName = true;
-
+        let previousMessages = []; // Store conversation history
         imageInput.addEventListener('input', updateImagePreview);
 
         function updateImagePreview() {
@@ -89,13 +94,18 @@
         updateImagePreview();
 
         async function generateCode() {
+            const startTime = performance.now();
+
             const input = document.getElementById('input').value;
             const imageUrl = document.getElementById('imageInput').value;
-            const previousCode = document.getElementById('previousCode').value;
             const output = document.getElementById('output');
             const status = document.getElementById('status');
             const generateButton = document.getElementById('generateButton');
             const topicName = document.getElementById('topicName');
+            const messagesContainer = document.getElementById('messagesContainer');
+
+            // Reset metrics
+            document.getElementById('totalTime').textContent = '-';
 
             if (!input.trim()) {
                 showStatus('Please enter a description', 'error');
@@ -116,24 +126,65 @@
                     body: JSON.stringify({
                         textInput: input,
                         imageInput: imageUrl || undefined,
-                        previousCode: previousCode || undefined,
+                        previousMessages: previousMessages,
                         topicName: needTopicName,
                     })
                 });
 
                 const data = await response.json();
-                
+                const endTime = performance.now();
+
                 if (data.error) {
                     throw new Error(data.error);
                 }
 
+                // Update performance metrics
+                const totalTime = endTime - startTime;
+                document.getElementById('totalTime').textContent =
+                    `${totalTime.toFixed(2)}ms (${(totalTime / 1000).toFixed(2)}s)`;
+
+                // Update messages display with timing info
+                previousMessages.push([
+                    {
+                        role: 'user',
+                        content: [{ type: 'text', text: input }]
+                    },
+                    {
+                        role: 'assistant',
+                        content: data.code
+                    }
+                ]);
+
+                messagesContainer.innerHTML = previousMessages
+                    .map((exchange, index) => `
+                    <div class="border rounded-lg p-4">
+                        <div class="mb-2">
+                            <strong>User ${index + 1}:</strong>
+                            <pre class="bg-gray-50 p-2 rounded mt-1">${exchange[0].content[0].text}</pre>
+                        </div>
+                        <div>
+                            <strong>Assistant ${index + 1}:</strong>
+                            <pre class="bg-gray-50 p-2 rounded mt-1">${typeof exchange[1].content === 'string'
+                            ? exchange[1].content.substring(0, 100) + '...'
+                            : 'Complex content'
+                        }</pre>
+                        </div>
+                    </div>
+                `)
+                    .join('');
+
                 output.textContent = data.code;
+
                 if (needTopicName) {
                     topicName.textContent = data.topicName;
                     needTopicName = false;
-                }       
+                }
 
-                showStatus('Code generated successfully!', 'success');
+                if (data.refinedPrompt) {
+                    showStatus(`Refined prompt (${(totalTime / 1000).toFixed(2)}s): ${data.refinedPrompt}`, 'success');
+                } else {
+                    showStatus(`Code generated successfully! (${(totalTime / 1000).toFixed(2)}s)`, 'success');
+                }
 
             } catch (error) {
                 console.error('Error:', error);
@@ -148,12 +199,33 @@
         function showStatus(message, type) {
             const status = document.getElementById('status');
             status.textContent = message;
-            status.className = `mb-4 p-4 rounded-md ${
-                type === 'error' 
-                    ? 'bg-red-50 text-red-700' 
-                    : 'bg-green-50 text-green-700'
-            }`;
+            status.className = `mb-4 p-4 rounded-md ${type === 'error'
+                ? 'bg-red-50 text-red-700'
+                : 'bg-green-50 text-green-700'
+                }`;
+        }
+
+        function clearConversation() {
+            previousMessages = [];
+            document.getElementById('messagesContainer').innerHTML = '';
+            needTopicName = true;
+            document.getElementById('topicName').textContent = 'Generate UI Component';
+            showStatus('Conversation cleared', 'success');
         }
     </script>
 </body>
+
 </html>
+
+<style>
+    #metrics {
+        font-family: monospace;
+        font-size: 0.9em;
+    }
+
+    #metrics>div {
+        padding: 0.5em;
+        background-color: #f5f5f5;
+        border-radius: 0.25em;
+    }
+</style>

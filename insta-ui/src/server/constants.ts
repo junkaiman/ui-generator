@@ -1,4 +1,1 @@
-export const MAX_ATTEMPTS = 10;
-export const MAX_TOKENS = 1000;
-export const TEMPERATURE = 0.7;
-export const MODEL = "gpt-4o-mini";
+export const MODEL = "gpt-4o";
