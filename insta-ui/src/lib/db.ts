@@ -28,6 +28,12 @@ const updateChat = async (chat: Chat) => {
   });
 };
 
+const updateChatTitle = async (chat: Chat) => {
+  return db.chats.update(chat.id, {
+    description: chat.description,
+  });
+};
+
 const getChatById = async (id: string) => {
   return db.chats.get(id);
 };
@@ -47,6 +53,7 @@ export { db };
 export {
   addChat,
   updateChat,
+  updateChatTitle,
   getChatById,
   deleteChatById,
   getChats,

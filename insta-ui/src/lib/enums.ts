@@ -8,6 +8,11 @@ export enum MobileTabs {
   Preview = "preview",
 }
 
+// Global events
+export enum GE {
+  RefreshSideBar = "refresh-sidebar",
+}
+
 /**
  * DB related enums
  */

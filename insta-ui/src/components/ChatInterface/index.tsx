@@ -4,9 +4,10 @@ import { useEffect, useState } from "react";
 import MessageList from "./MessageList";
 import InputBar from "./InputBar";
 import "./ChatInterface.css";
-import { getChatById, updateChat } from "@/lib/db";
+import { getChatById, updateChat, updateChatTitle } from "@/lib/db";
 import { useSearchParams } from "next/navigation";
-import { fetchAIResponse } from "@/app/api/generate/utils";
+import { fetchAIResponseWithTitle } from "@/app/api/generate/utils";
+import { GE } from "@/lib/enums";
 
 export default function ChatInterface() {
   const searchParams = useSearchParams();
@@ -61,7 +62,12 @@ export default function ChatInterface() {
     let res: Response | undefined = undefined;
 
     if (typeof message.content === "string") {
-      res = await fetchAIResponse(message.content);
+      res = await fetchAIResponseWithTitle(
+        message.content,
+        undefined,
+        undefined,
+        true
+      );
     } else {
       // TODO: support image input
       // TODO: support previous code
@@ -69,13 +75,28 @@ export default function ChatInterface() {
     setIsLoading(false);
 
     if (res) {
+      const resJson = await res.json();
+
       const aiResponse: Message = {
         role: "assistant",
-        content: (await res.json()).code,
+        content: resJson.code,
       };
 
       setMessages((prevMessages) => [...prevMessages, aiResponse]);
 
+      // update chat title
+      getChatById(chatId).then((chat: Chat | undefined) => {
+        if (chat) {
+          chat.description = resJson.topicName;
+          updateChatTitle(chat);
+
+          // refresh side bar
+          const event = new Event(GE.RefreshSideBar);
+          window.dispatchEvent(event);
+        }
+      });
+
+      // update chat messages
       getChatById(chatId).then((chat: Chat | undefined) => {
         if (chat) {
           chat.messages.push(aiResponse);

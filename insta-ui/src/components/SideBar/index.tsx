@@ -7,6 +7,7 @@ import { ChatHeader, Messages } from "@/lib/types";
 import { Button } from "../ui/button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleNotch } from "@fortawesome/free-solid-svg-icons";
+import { GE } from "@/lib/enums";
 
 export default function SideBar() {
   const searchParams = useSearchParams();
@@ -25,6 +26,15 @@ export default function SideBar() {
     });
   };
 
+  // listen for refresh event
+  useEffect(() => {
+    window.addEventListener(GE.RefreshSideBar, updateChats);
+    return () => {
+      window.removeEventListener(GE.RefreshSideBar, updateChats);
+    };
+  }, []);
+
+  // listen for chatId change
   useEffect(() => {
     updateChats();
     setLoading(false);
