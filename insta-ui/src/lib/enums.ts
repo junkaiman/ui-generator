@@ -11,6 +11,7 @@ export enum MobileTabs {
 // Global events
 export enum GE {
   RefreshSideBar = "refresh-sidebar",
+  RefreshPreviewer = "refresh-previewer",
 }
 
 /**

@@ -1,16 +1,19 @@
 "use client"; // Add this at the very top of the file
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { LiveProvider, LivePreview, LiveError } from "react-live";
 import MonacoEditor from "react-monaco-editor";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { PreviewerTabs } from "@/lib/enums";
+import { GE, PreviewerTabs } from "@/lib/enums";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCopy } from "@fortawesome/free-regular-svg-icons";
 import * as monaco from "monaco-editor"; // Import monaco for theme definitions
+import { getChatById } from "@/lib/db";
+import { useSearchParams } from "next/navigation";
+import { Chat } from "@/lib/types";
 
-const initialCode: string =  `
+const initialCode: string = `
 function App() {
   return (
     <div 
@@ -97,10 +100,10 @@ const defineThemes = () => {
   });
 };
 
-
-
-
 export default function Previewer() {
+  const searchParams = useSearchParams();
+  const chatId = searchParams.get("c") || "";
+
   const [code, setCode] = useState<string>(initialCode); // Code state
   const [error, setError] = useState<string | null>(null); // Error state
   const [theme, setTheme] = useState<string>("customDarkTheme"); // Default theme
@@ -111,6 +114,33 @@ export default function Previewer() {
     defineThemes();
   }, []);
 
+  // listen refresh-previewer event
+  const refreshPreviewer = useCallback(() => {
+    getChatById(chatId).then((chat: Chat | undefined) => {
+      if (chat) {
+        const lastMessage = chat.messages[chat.messages.length - 1];
+        if (
+          lastMessage &&
+          lastMessage.role === "assistant" &&
+          typeof lastMessage.content === "string"
+        ) {
+          setCode(lastMessage.content);
+        }
+      }
+    });
+  }, [chatId]);
+
+  useEffect(() => {
+    window.addEventListener(GE.RefreshPreviewer, refreshPreviewer);
+    return () => {
+      window.removeEventListener(GE.RefreshPreviewer, refreshPreviewer);
+    };
+  }, [refreshPreviewer]);
+
+  useEffect(() => {
+    refreshPreviewer();
+  }, [chatId, refreshPreviewer]);
+
   // Handle code change from MonacoEditor
   const handleCodeChange = (newCode: string | undefined) => {
     if (newCode) {
@@ -119,7 +149,7 @@ export default function Previewer() {
       errorHandler.clearErrors();
     }
   };
-  
+
   const handleThemeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedTheme = e.target.value;
     setTheme(selectedTheme);
@@ -135,20 +165,18 @@ export default function Previewer() {
           case "json":
             return new Worker(""); // Replace with the correct path
           case "css":
-            return new Worker("");  // Replace with the correct path
+            return new Worker(""); // Replace with the correct path
           case "html":
             return new Worker(""); // Replace with the correct path
           case "typescript":
           case "javascript":
-            return new Worker("");   // Replace with the correct path
+            return new Worker(""); // Replace with the correct path
           default:
             return new Worker(""); // Default worker
         }
       },
     };
-    
   }, []);
-  
 
   return (
     <Tabs
@@ -194,10 +222,10 @@ export default function Previewer() {
                 <FontAwesomeIcon icon={faCopy} />
               </button>
               <select id="theme" value={theme} onChange={handleThemeChange}>
-                  <option value="customDarkTheme">Dark</option>
-                  <option value="customLightTheme">Light</option>
-                  <option value="customMonokaiTheme">Monokai</option>
-                </select>
+                <option value="customDarkTheme">Dark</option>
+                <option value="customLightTheme">Light</option>
+                <option value="customMonokaiTheme">Monokai</option>
+              </select>
             </div>
 
             <div className="flex-grow overflow-auto">
