@@ -172,7 +172,7 @@ export default function Previewer() {
           <LiveProvider code={code} noInline={true}>
             <div className="relative h-full overflow-hidden">
               {/* Preview Section */}
-              <div className="p-4 h-[calc(100vh-204px)] border rounded bg-white min-h-[400px] h-full overflow-auto">
+              <div className="h-[calc(100vh-204px)] rounded bg-white min-h-[400px] h-full overflow-auto">
                 <LivePreview />
               </div>
               <LiveError className="absolute top-0 left-0 right-0 bottom-0 p-4 overflow-auto text-red-500 bg-red-50 rounded-xl mt-2" />
@@ -187,12 +187,12 @@ export default function Previewer() {
         value={PreviewerTabs.Code}
         className="flex-grow overflow-hidden"
       >
-        <Card className="p-4 border rounded-xl h-full flex flex-col overflow-hidden">
-          <div className="h-full flex flex-col overflow-auto">
+        <Card className="p-3 border rounded-xl h-full flex flex-col overflow-hidden">
+          <div className="flex flex-col overflow-auto">
             <div className="flex justify-between mb-2">
               <button
                 onClick={() => navigator.clipboard.writeText(code)}
-                className="p-2 bg-transparent border-0 cursor-pointer hover:text-blue-500 hover:bg-gray-100 rounded focus:outline-none transition-colors duration-200"
+                className="bg-transparent border-0 cursor-pointer hover:text-blue-500 hover:bg-gray-100 rounded focus:outline-none transition-colors duration-200"
               >
                 <FontAwesomeIcon icon={faCopy} />
               </button>
