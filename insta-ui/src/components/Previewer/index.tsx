@@ -168,7 +168,7 @@ export default function Previewer() {
         value={PreviewerTabs.Preview}
         className="flex-grow overflow-hidden"
       >
-        <Card className="p-4 border rounded-xl h-full overflow-hidden">
+        <div className="p-2 h-full overflow-hidden">
           <LiveProvider code={code} noInline={true}>
             <div className="relative h-full overflow-hidden">
               {/* Preview Section */}
@@ -179,7 +179,7 @@ export default function Previewer() {
               {error}
             </div>
           </LiveProvider>
-        </Card>
+        </div>
       </TabsContent>
 
       {/* Code Editor Tab */}
