@@ -28,7 +28,7 @@ type Messages = Message[];
 interface GenerateRequest {
   textInput: string;
   imageInput?: string;
-  previousCode?: string;
+  previousMessages?: Messages[];
   topicName: boolean;
 }
 
