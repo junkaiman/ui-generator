@@ -3,9 +3,8 @@ import { Message, Messages, TextContent, ImageContent } from '@/lib/types'
 export function generateMessages(
     textInput: string,
     imageInput?: string,
-    topicName?: boolean,
     previousMessages?: Messages[]
-): { messages: Message[], topicMessages: Message[] } {
+): Message[] {
     const messages: Message[] = [
         {
             role: 'system',
@@ -68,34 +67,7 @@ export function generateMessages(
         content: userContent
     });
 
-    const topicMessages: Message[] = []
-    if (topicName) {
-        topicMessages.push({
-            role: 'system',
-            content: `You are a request title creator. You have to help the user summarize a request in no more than 6 words.`
-        });
-
-        const userContent: (TextContent | ImageContent)[] = [
-            { type: 'text', text: `Create a request title based on this description: ${textInput}` }
-        ];
-
-        if (imageInput) {
-            userContent.push({
-                type: 'image_url',
-                image_url: {
-                    url: imageInput
-                }
-            } as ImageContent);
-        }
-
-        topicMessages.push({
-            role: 'user',
-            content: userContent
-        });
-
-    }
-
-    return { messages, topicMessages };
+    return messages;
 }
 
 export function generatePromptRevisionMessages(
@@ -115,7 +87,12 @@ export function generatePromptRevisionMessages(
             - Accessibility considerations
             - Responsive design requirements
             - Consistency with previous interactions
-            ${previousMessages?.length ? '- Integration with previous component versions' : ''}`
+            ${previousMessages?.length ? '- Integration with previous component versions' : ''}
+          
+            Additionally, generate a concise title (6 words or less) summarizing the user's request.
+            Format the output as a JSON object containing two fields:
+            - "refined_prompt": The improved detailed prompt.
+            - "title": The concise title.`
         },
         ...(previousMessages?.slice(-2).flat() || []), // Add recent conversation context
         {
@@ -124,8 +101,8 @@ export function generatePromptRevisionMessages(
                 {
                     type: 'text',
                     text: previousMessages?.length 
-                        ? `Refine this component request, considering our previous conversation and iterations: ${textInput}`
-                        : `Refine this component request into a detailed prompt: ${textInput}`
+                        ? `Refine this component request and include a title, considering our previous conversation and iterations: ${textInput}`
+                        : `Refine this component request into a detailed prompt and include a title: ${textInput}`
                 },
                 ...(imageInput ? [{
                     type: 'image_url',
