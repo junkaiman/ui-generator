@@ -6,7 +6,7 @@ import InputBar from "./InputBar";
 import "./ChatInterface.css";
 import { getChatById, updateChat, updateChatTitle } from "@/lib/db";
 import { useSearchParams } from "next/navigation";
-import { fetchAIResponseWithTitle } from "@/app/api/generate/utils";
+import { fetchAIResponse } from "@/app/api/generate/utils";
 import { GE } from "@/lib/enums";
 
 export default function ChatInterface() {
@@ -39,7 +39,7 @@ export default function ChatInterface() {
       }
     });
 
-    getAIResponse(messages[index]);
+    getAIResponse(messages[index], messages.slice(0, index));
   };
 
   const handleRegenerate = (index: number) => {
@@ -54,23 +54,25 @@ export default function ChatInterface() {
       }
     });
 
-    getAIResponse(messages[index]);
+    getAIResponse(messages[index], messages.slice(0, index));
   };
 
-  const getAIResponse = async (message: Message) => {
+  const getAIResponse = async (lastMsg: Message, prevMsgs: Message[]) => {
     setIsLoading(true);
     let res: Response | undefined = undefined;
 
-    if (typeof message.content === "string") {
-      res = await fetchAIResponseWithTitle(
-        message.content,
+    // if sending the first message, get title from the response
+    const isFirstMsg = prevMsgs.length === 0;
+
+    if (typeof lastMsg.content === "string") {
+      res = await fetchAIResponse(
+        lastMsg.content,
         undefined,
-        undefined,
-        true
+        prevMsgs,
+        isFirstMsg
       );
     } else {
       // TODO: support image input
-      // TODO: support previous code
     }
     setIsLoading(false);
 
@@ -84,17 +86,19 @@ export default function ChatInterface() {
 
       setMessages((prevMessages) => [...prevMessages, aiResponse]);
 
-      // update chat title
-      getChatById(chatId).then((chat: Chat | undefined) => {
-        if (chat) {
-          chat.description = resJson.topicName;
-          updateChatTitle(chat);
+      // if isFirstMsg, update chat title
+      if (isFirstMsg) {
+        getChatById(chatId).then((chat: Chat | undefined) => {
+          if (chat) {
+            chat.description = resJson.topicName;
+            updateChatTitle(chat);
 
-          // refresh side bar
-          const event = new Event(GE.RefreshSideBar);
-          window.dispatchEvent(event);
-        }
-      });
+            // refresh side bar
+            const event = new Event(GE.RefreshSideBar);
+            window.dispatchEvent(event);
+          }
+        });
+      }
 
       // update chat messages
       getChatById(chatId).then((chat: Chat | undefined) => {
@@ -121,7 +125,7 @@ export default function ChatInterface() {
       }
     });
 
-    getAIResponse(newMessage);
+    getAIResponse(newMessage, messages);
   };
 
   const handleImageUpload = async (imageFile: File) => {
@@ -147,7 +151,7 @@ export default function ChatInterface() {
         }
       });
 
-      getAIResponse(newMessage);
+      getAIResponse(newMessage, messages);
     };
     reader.readAsDataURL(imageFile);
   };
