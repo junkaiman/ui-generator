@@ -37,7 +37,8 @@ export async function POST(req: Request) {
         // First, get the refined prompt
         const revisionMessages = generatePromptRevisionMessages(
             input.textInput,
-            input.imageInput
+            input.imageInput,
+            input.previousMessages
         );
 
         const refinedPromptCompletion = await openai.chat.completions.create({
@@ -45,15 +46,16 @@ export async function POST(req: Request) {
             messages: transformMessages(revisionMessages),
         });
         const refinedPrompt = refinedPromptCompletion.choices[0].message.content ?? input.textInput;
-        // console.log("Refined prompt:", refinedPrompt);
+        console.log("Refined prompt:", refinedPrompt);
 
         // Use the refined prompt to generate the component
         const { messages, topicMessages } = generateMessages(
-            refinedPrompt, // Use refined prompt instead of original textInput
+            refinedPrompt,
             input.imageInput,
-            input.previousCode,
             input.topicName,
+            input.previousMessages
         );
+        console.log("messages: ",messages)
 
         const completion = await openai.chat.completions.create({
             model: MODEL,
