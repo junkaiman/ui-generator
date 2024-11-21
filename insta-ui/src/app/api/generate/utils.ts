@@ -1,7 +1,9 @@
+import { Messages } from "@/lib/types";
 export function fetchAIResponse(
   textInput: string,
   imageInput: string | undefined = undefined,
-  previousCode: string | undefined = undefined
+  previousMessages: Messages | undefined = undefined,
+  topicName: boolean = false
 ) {
   return fetch("/api/generate", {
     method: "POST",
@@ -11,7 +13,8 @@ export function fetchAIResponse(
     body: JSON.stringify({
       textInput,
       imageInput,
-      previousCode,
+      previousMessages,
+      topicName,
     }),
   });
 }

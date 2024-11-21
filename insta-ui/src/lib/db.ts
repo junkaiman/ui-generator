@@ -15,7 +15,7 @@ const addChat = async (messages: Messages) => {
   const chat = {
     id,
     messages,
-    description: `Chat created on ${new Date().toLocaleString()}`,
+    description: `New Chat`,
     lastModified: new Date(),
   };
   return db.chats.add(chat);
@@ -25,6 +25,12 @@ const updateChat = async (chat: Chat) => {
   return db.chats.update(chat.id, {
     messages: chat.messages,
     lastModified: new Date(),
+  });
+};
+
+const updateChatTitle = async (chat: Chat) => {
+  return db.chats.update(chat.id, {
+    description: chat.description,
   });
 };
 
@@ -47,6 +53,7 @@ export { db };
 export {
   addChat,
   updateChat,
+  updateChatTitle,
   getChatById,
   deleteChatById,
   getChats,
