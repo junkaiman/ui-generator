@@ -1,17 +1,16 @@
 "use client"; // Add this at the very top of the file
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import { LiveProvider, LivePreview, LiveError } from "react-live";
 import MonacoEditor from "react-monaco-editor";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { GE, PreviewerTabs } from "@/lib/enums";
+import { PreviewerTabs } from "@/lib/enums";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCopy } from "@fortawesome/free-regular-svg-icons";
 import * as monaco from "monaco-editor"; // Import monaco for theme definitions
-import { getChatById } from "@/lib/db";
 import { useSearchParams } from "next/navigation";
-import { Chat } from "@/lib/types";
+import Pagination from "./Pagination";
 
 const initialCode: string = `
 function App() {
@@ -19,7 +18,6 @@ function App() {
     <div 
       style={{
         padding: '20px',
-        border: '1px solid #ddd',
         fontFamily: 'Arial'
       }}
     >
@@ -114,33 +112,6 @@ export default function Previewer() {
     defineThemes();
   }, []);
 
-  // listen refresh-previewer event
-  const refreshPreviewer = useCallback(() => {
-    getChatById(chatId).then((chat: Chat | undefined) => {
-      if (chat) {
-        const lastMessage = chat.messages[chat.messages.length - 1];
-        if (
-          lastMessage &&
-          lastMessage.role === "assistant" &&
-          typeof lastMessage.content === "string"
-        ) {
-          setCode(lastMessage.content);
-        }
-      }
-    });
-  }, [chatId]);
-
-  useEffect(() => {
-    window.addEventListener(GE.RefreshPreviewer, refreshPreviewer);
-    return () => {
-      window.removeEventListener(GE.RefreshPreviewer, refreshPreviewer);
-    };
-  }, [refreshPreviewer]);
-
-  useEffect(() => {
-    refreshPreviewer();
-  }, [chatId, refreshPreviewer]);
-
   // Handle code change from MonacoEditor
   const handleCodeChange = (newCode: string | undefined) => {
     if (newCode) {
@@ -183,28 +154,32 @@ export default function Previewer() {
       defaultValue={PreviewerTabs.Preview}
       className="p-2 h-full flex flex-col border border-gray-300 rounded-lg overflow-hidden"
     >
+      {/* Tabs List */}
       <TabsList className="grid w-full grid-cols-2">
         <TabsTrigger value={PreviewerTabs.Preview}>Preview</TabsTrigger>
         <TabsTrigger value={PreviewerTabs.Code}>Code</TabsTrigger>
       </TabsList>
+
+      {/* Code Pagination */}
+      <Pagination chatId={chatId} onUpdateCode={setCode} />
 
       {/* Live Preview Tab */}
       <TabsContent
         value={PreviewerTabs.Preview}
         className="flex-grow overflow-hidden"
       >
-        <Card className="p-4 border rounded-xl h-full overflow-hidden">
+        <div className="p-2 h-full overflow-hidden">
           <LiveProvider code={code} noInline={true}>
             <div className="relative h-full overflow-hidden">
               {/* Preview Section */}
-              <div className="p-4 h-[calc(100vh-204px)] border rounded bg-white min-h-[400px] h-full overflow-auto">
+              <div className="h-[calc(100vh-204px)] rounded bg-white min-h-[400px] h-full overflow-auto">
                 <LivePreview />
               </div>
               <LiveError className="absolute top-0 left-0 right-0 bottom-0 p-4 overflow-auto text-red-500 bg-red-50 rounded-xl mt-2" />
               {error}
             </div>
           </LiveProvider>
-        </Card>
+        </div>
       </TabsContent>
 
       {/* Code Editor Tab */}
@@ -212,12 +187,12 @@ export default function Previewer() {
         value={PreviewerTabs.Code}
         className="flex-grow overflow-hidden"
       >
-        <Card className="p-4 border rounded-xl h-full flex flex-col overflow-hidden">
-          <div className="h-full flex flex-col overflow-auto">
+        <Card className="p-3 border rounded-xl h-full flex flex-col overflow-hidden">
+          <div className="flex flex-col overflow-auto">
             <div className="flex justify-between mb-2">
               <button
                 onClick={() => navigator.clipboard.writeText(code)}
-                className="p-2 bg-transparent border-0 cursor-pointer hover:text-blue-500 hover:bg-gray-100 rounded focus:outline-none transition-colors duration-200"
+                className="bg-transparent border-0 cursor-pointer hover:text-blue-500 hover:bg-gray-100 rounded focus:outline-none transition-colors duration-200"
               >
                 <FontAwesomeIcon icon={faCopy} />
               </button>
