@@ -104,7 +104,11 @@ export default function ChatInterface() {
       getChatById(chatId).then((chat: Chat | undefined) => {
         if (chat) {
           chat.messages.push(aiResponse);
-          updateChat(chat);
+          updateChat(chat).then(() => {
+            // dispatch refresh previewer event
+            const event = new Event(GE.RefreshPreviewer);
+            window.dispatchEvent(event);
+          });
         }
       });
     }
