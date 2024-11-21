@@ -1,5 +1,4 @@
 import { Message, Messages, TextContent, ImageContent } from '@/lib/types'
-import { Message, Messages, TextContent, ImageContent } from '@/lib/types'
 
 export function generateMessages(
     textInput: string,
