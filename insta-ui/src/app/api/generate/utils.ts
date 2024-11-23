@@ -1,6 +1,6 @@
 import { Messages } from "@/lib/types";
 export function fetchAIResponse(
-  textInput: string,
+  textInput: string | undefined = undefined,
   imageInput: string | undefined = undefined,
   previousMessages: Messages | undefined = undefined,
   topicName: boolean = false

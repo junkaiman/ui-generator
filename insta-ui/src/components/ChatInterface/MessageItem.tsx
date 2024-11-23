@@ -29,6 +29,7 @@ const MessageItem: React.FC<MessageItemProps> = ({
   };
 
   const renderContent = () => {
+    // TODO: Code box for assistant messages
     if (isEditing) {
       return (
         <textarea
@@ -76,6 +77,45 @@ const MessageItem: React.FC<MessageItemProps> = ({
     );
   };
 
+  const renderActions = () => {
+    if (
+      typeof message.content === "string" ||
+      message.content.some((content) => content.type === "text")
+    ) {
+      return null;
+    }
+    return (
+      <>
+        {message.role === "user" &&
+          (isEditing ? (
+            <>
+              <button onClick={handleSaveEdit} className="button-save">
+                Save
+              </button>
+              <button onClick={() => setIsEditing(false)}>Cancel</button>
+            </>
+          ) : (
+            <button onClick={() => setIsEditing(true)} className="button-edit">
+              Edit
+            </button>
+          ))}
+
+        {message.role === "assistant" && (
+          <button
+            onMouseEnter={() => setHoveredButton("regenerate")}
+            onMouseLeave={() => setHoveredButton(null)}
+            onClick={() => onRegenerate(messageIndex)}
+            className={`button-regenerate ${
+              hoveredButton === "regenerate" ? "shadow-lg" : ""
+            }`}
+          >
+            Regenerate
+          </button>
+        )}
+      </>
+    );
+  };
+
   return (
     <div className={`message-item ${message.role}`}>
       {message.role === "assistant" && (
@@ -84,40 +124,7 @@ const MessageItem: React.FC<MessageItemProps> = ({
 
       <div className="message-container">
         <div className="message-content">{renderContent()}</div>
-        {typeof message.content === "string" ||
-        message.content.some((content) => content.type === "text") ? (
-          <div className="message-actions">
-            {message.role === "user" &&
-              (isEditing ? (
-                <>
-                  <button onClick={handleSaveEdit} className="button-save">
-                    Save
-                  </button>
-                  <button onClick={() => setIsEditing(false)}>Cancel</button>
-                </>
-              ) : (
-                <button
-                  onClick={() => setIsEditing(true)}
-                  className="button-edit"
-                >
-                  Edit
-                </button>
-              ))}
-
-            {message.role === "assistant" && (
-              <button
-                onMouseEnter={() => setHoveredButton("regenerate")}
-                onMouseLeave={() => setHoveredButton(null)}
-                onClick={() => onRegenerate(messageIndex)}
-                className={`button-regenerate ${
-                  hoveredButton === "regenerate" ? "shadow-lg" : ""
-                }`}
-              >
-                Regenerate
-              </button>
-            )}
-          </div>
-        ) : null}
+        <div className="message-actions">{renderActions()}</div>
       </div>
 
       {message.role === "user" && (

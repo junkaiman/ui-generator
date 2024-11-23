@@ -72,7 +72,13 @@ export default function ChatInterface() {
         isFirstMsg
       );
     } else {
-      // TODO: support image input
+      // support image input
+      res = await fetchAIResponse(
+        undefined,
+        (lastMsg.content[0] as ImageContent).image_url.url,
+        prevMsgs,
+        isFirstMsg
+      );
     }
     setIsLoading(false);
 
