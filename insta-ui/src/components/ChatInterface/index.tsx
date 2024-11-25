@@ -81,7 +81,8 @@ export default function ChatInterface() {
       );
     }
     setIsLoading(false);
-
+    console.log("AI response: " + res);
+    
     if (res) {
       const resJson = await res.json();
 

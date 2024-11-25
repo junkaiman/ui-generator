@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { Message, TextContent, ImageContent } from "../../lib/types";
+import SyntaxHighlighter from "react-syntax-highlighter";
+import { dracula } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import "./ChatInterface.css";
 
 interface MessageItemProps {
@@ -30,6 +32,14 @@ const MessageItem: React.FC<MessageItemProps> = ({
 
   const renderContent = () => {
     // TODO: Code box for assistant messages
+    if (message.role === "assistant") {
+      console.log("code content: " + message.content);
+      return (
+        <SyntaxHighlighter language="javascript" style={dracula} customStyle={ {fontSize: '10px' }}>
+          {message.content as string}
+        </SyntaxHighlighter>
+      )
+    }
     if (isEditing) {
       return (
         <textarea
@@ -53,7 +63,6 @@ const MessageItem: React.FC<MessageItemProps> = ({
         </p>
       );
     }
-
     return (message.content as (TextContent | ImageContent)[]).map(
       (content, index) => {
         if (content.type === "text") {
@@ -79,8 +88,8 @@ const MessageItem: React.FC<MessageItemProps> = ({
 
   const renderActions = () => {
     if (
-      typeof message.content === "string" ||
-      message.content.some((content) => content.type === "text")
+      ! (typeof message.content === "string" ||
+      message.content.some((content) => content.type === "text"))
     ) {
       return null;
     }
