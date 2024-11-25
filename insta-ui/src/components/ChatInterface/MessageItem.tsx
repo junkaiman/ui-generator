@@ -1,4 +1,4 @@
-import React, { useState, useEffect, use } from "react";
+import React, { useState } from "react";
 import { Message, TextContent, ImageContent } from "../../lib/types";
 import SyntaxHighlighter from "react-syntax-highlighter";
 import { dracula } from 'react-syntax-highlighter/dist/esm/styles/prism';
