@@ -73,8 +73,10 @@ export default function ChatInterface() {
       );
     } else {
       // support image input
+      const textPrompt = `Implement the user interface shown in the provided image in react code 
+                          with exactly the same functionalities and styles`;
       res = await fetchAIResponse(
-        "Implement the user interface shown in the provided image in react code",
+        textPrompt,
         (lastMsg.content[0] as ImageContent).image_url.url,
         prevMsgs,
         isFirstMsg
