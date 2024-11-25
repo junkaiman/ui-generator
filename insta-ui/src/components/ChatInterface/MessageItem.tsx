@@ -1,8 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, use } from "react";
 import { Message, TextContent, ImageContent } from "../../lib/types";
 import SyntaxHighlighter from "react-syntax-highlighter";
 import { dracula } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import Modal from "react-modal";
 import "./ChatInterface.css";
+
 
 interface MessageItemProps {
   message: Message;
@@ -10,6 +12,24 @@ interface MessageItemProps {
   onModify: (index: number, message: Message) => void;
   onRegenerate: (index: number) => void;
 }
+
+const ImageModal: React.FC<{ imageUrl: string; onClose: () => void }> = ({
+  imageUrl,
+  onClose,
+}) => (
+  <Modal isOpen={!!imageUrl} onRequestClose={onClose} className="fixed inset-0 flex items-center justify-center z-50"
+  overlayClassName="fixed inset-0 bg-black bg-opacity-50 z-40" ariaHideApp={false}>
+    <div className="relative bg-white p-4 rounded shadow-lg max-w-full max-h-full overflow-auto">
+      <img src={imageUrl} alt="Modal content" className="max-w-full max-h-full object-contain mb-4" />
+      <button
+        onClick={onClose}
+        className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700"
+      >
+        Close
+      </button>
+    </div>
+  </Modal>
+);
 
 const MessageItem: React.FC<MessageItemProps> = ({
   message,
@@ -23,6 +43,7 @@ const MessageItem: React.FC<MessageItemProps> = ({
 
   const [isEditing, setIsEditing] = useState(false);
   const [editContent, setEditContent] = useState(message.content);
+  const [modalImageUrl, setModalImageUrl] = useState<string | null>(null);
 
   const handleSaveEdit = () => {
     message.content = editContent;
@@ -77,6 +98,7 @@ const MessageItem: React.FC<MessageItemProps> = ({
               src={(content as ImageContent).image_url.url}
               alt="Message content"
               className="w-32 h-32 rounded-lg"
+              onClick={() => setModalImageUrl((content as ImageContent).image_url.url)}
             />
           );
         }
@@ -137,6 +159,10 @@ const MessageItem: React.FC<MessageItemProps> = ({
 
       {message.role === "user" && (
         <img src="/user-avatar.png" alt="User Avatar" className="avatar" />
+      )}
+
+      {modalImageUrl && (
+        <ImageModal imageUrl={modalImageUrl} onClose={() => setModalImageUrl(null)} />
       )}
     </div>
   );
