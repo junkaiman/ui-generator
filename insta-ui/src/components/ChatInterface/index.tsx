@@ -74,18 +74,16 @@ export default function ChatInterface() {
     } else {
       // support image input
       res = await fetchAIResponse(
-        undefined,
+        "Generate an UI based on the provided image",
         (lastMsg.content[0] as ImageContent).image_url.url,
         prevMsgs,
         isFirstMsg
       );
     }
     setIsLoading(false);
-    console.log("AI response: " + res);
-    
+        
     if (res) {
       const resJson = await res.json();
-
       const aiResponse: Message = {
         role: "assistant",
         content: resJson.code,
