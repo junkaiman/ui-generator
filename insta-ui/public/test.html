@@ -17,28 +17,68 @@
 
             <div class="mb-4">
                 <label class="block text-sm font-medium text-gray-700 mb-2">
-                    Description:
+                    Description: <span class="text-red-500">*</span>
                 </label>
                 <textarea id="input" class="w-full p-2 border rounded-md" rows="4"
-                    placeholder="Describe the component you want...">Create a button that looks like this image</textarea>
+                    placeholder="Describe the component you want..."></textarea>
             </div>
 
             <div class="mb-4">
                 <label class="block text-sm font-medium text-gray-700 mb-2">
-                    Image URL:
+                    Include Reference Image? (Optional)
                 </label>
-                <input type="text" id="imageInput" class="w-full p-2 border rounded-md" placeholder="Enter image URL..."
-                    value="https://wallpapers.com/images/high/gru-despicable-me-minion-iphone-zz1jrsybwxtbkz3r.webp" />
-                <div id="imagePreview" class="mt-2"></div>
+                <div class="flex space-x-4">
+                    <label class="inline-flex items-center">
+                        <input type="radio" name="useImage" value="no" checked class="form-radio text-blue-500"
+                            onchange="toggleImageSection()">
+                        <span class="ml-2">No Image</span>
+                    </label>
+                    <label class="inline-flex items-center">
+                        <input type="radio" name="useImage" value="yes" class="form-radio text-blue-500"
+                            onchange="toggleImageSection()">
+                        <span class="ml-2">Add Image</span>
+                    </label>
+                </div>
             </div>
 
-            <!-- <div class="mb-4">
-                <label class="block text-sm font-medium text-gray-700 mb-2">
-                    Previous Code (optional):
-                </label>
-                <textarea id="previousCode" class="w-full p-2 border rounded-md" rows="4"
-                    placeholder="Enter previous code if you want to modify existing component..."></textarea>
-            </div> -->
+            <div id="imageSection" class="hidden">
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        Image Input Method:
+                    </label>
+                    <div class="flex space-x-4">
+                        <label class="inline-flex items-center">
+                            <input type="radio" name="imageInputMethod" value="url" checked
+                                class="form-radio text-blue-500" onchange="toggleImageInput()">
+                            <span class="ml-2">URL</span>
+                        </label>
+                        <label class="inline-flex items-center">
+                            <input type="radio" name="imageInputMethod" value="upload" class="form-radio text-blue-500"
+                                onchange="toggleImageInput()">
+                            <span class="ml-2">File Upload</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div id="urlInputContainer" class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        Image URL:
+                    </label>
+                    <input type="text" id="imageInput" class="w-full p-2 border rounded-md"
+                        placeholder="Enter image URL..."
+                        value="https://wallpapers.com/images/high/gru-despicable-me-minion-iphone-zz1jrsybwxtbkz3r.webp" />
+                </div>
+
+                <div id="fileInputContainer" class="mb-4 hidden">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        Upload Image:
+                    </label>
+                    <input type="file" id="fileInput" accept="image/*"
+                        class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" />
+                </div>
+
+                <div id="imagePreview" class="mt-2 mb-4"></div>
+            </div>
 
             <button onclick="generateCode()"
                 class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
@@ -50,17 +90,20 @@
                 Clear Conversation
             </button>
         </div>
+
         <div class="bg-white rounded-lg shadow p-6 mb-8">
             <h2 class="text-xl font-semibold mb-4">Previous Messages</h2>
             <div id="messagesContainer" class="space-y-4 mb-4">
                 <!-- Messages will be displayed here -->
             </div>
         </div>
+
         <div class="bg-white rounded-lg shadow p-6">
             <h2 class="text-xl font-semibold mb-4">Output</h2>
             <div id="status" class="mb-4 hidden"></div>
             <pre id="output" class="bg-gray-50 p-4 rounded-md text-sm overflow-x-auto">Output will appear here...</pre>
         </div>
+
         <div class="bg-white rounded-lg shadow p-6 mt-8">
             <h2 class="text-xl font-semibold mb-4">Performance Metrics</h2>
             <div id="metrics" class="space-y-2">
@@ -69,48 +112,117 @@
                 <div>Code Generation Time: <span id="generationTime">-</span></div>
             </div>
         </div>
-
     </div>
 
     <script>
         const imageInput = document.getElementById('imageInput');
+        const fileInput = document.getElementById('fileInput');
         const imagePreview = document.getElementById('imagePreview');
         let needTopicName = true;
-        let previousMessages = []; // Store conversation history
+        let previousMessages = [];
+
+        function toggleImageSection() {
+            const useImage = document.querySelector('input[name="useImage"]:checked').value;
+            document.getElementById('imageSection').classList.toggle('hidden', useImage === 'no');
+            if (useImage === 'no') {
+                // Clear image inputs when choosing no image
+                imageInput.value = '';
+                fileInput.value = '';
+                imagePreview.innerHTML = '';
+            }
+        }
+
+        function toggleImageInput() {
+            const method = document.querySelector('input[name="imageInputMethod"]:checked').value;
+            document.getElementById('urlInputContainer').classList.toggle('hidden', method === 'upload');
+            document.getElementById('fileInputContainer').classList.toggle('hidden', method === 'url');
+            updateImagePreview();
+        }
+
         imageInput.addEventListener('input', updateImagePreview);
+        fileInput.addEventListener('change', updateImagePreview);
 
         function updateImagePreview() {
-            const imageUrl = imageInput.value;
-            if (imageUrl) {
-                imagePreview.innerHTML = `
-                    <img src="${imageUrl}" alt="Preview" class="max-w-full h-auto rounded-md mt-2" style="max-height: 200px"/>
-                `;
+            const useImage = document.querySelector('input[name="useImage"]:checked').value;
+            if (useImage === 'no') {
+                imagePreview.innerHTML = '';
+                return;
+            }
+
+            const method = document.querySelector('input[name="imageInputMethod"]:checked').value;
+
+            if (method === 'url') {
+                const imageUrl = imageInput.value;
+                console.log("imageInput:", imageInput)
+                console.log("imageUrl:", imageUrl)
+                if (imageUrl) {
+                    imagePreview.innerHTML = `
+                        <img src="${imageUrl}" alt="Preview" class="max-w-full h-auto rounded-md mt-2" style="max-height: 200px"/>
+                    `;
+                } else {
+                    imagePreview.innerHTML = '';
+                }
+            } else if (method === 'upload' && fileInput.files && fileInput.files[0]) {
+                const file = fileInput.files[0];
+                const reader = new FileReader();
+
+                reader.onload = function (e) {
+                    imagePreview.innerHTML = `
+                        <img src="${e.target.result}" alt="Preview" class="max-w-full h-auto rounded-md mt-2" style="max-height: 200px"/>
+                    `;
+                };
+
+                reader.readAsDataURL(file);
             } else {
                 imagePreview.innerHTML = '';
             }
         }
 
-        // Initial preview
-        updateImagePreview();
+        async function getImageData() {
+            const useImage = document.querySelector('input[name="useImage"]:checked').value;
+            if (useImage === 'no') {
+                return undefined;
+            }
+
+            const method = document.querySelector('input[name="imageInputMethod"]:checked').value;
+
+            if (method === 'url') {
+                return imageInput.value || undefined;
+            } else if (method === 'upload' && fileInput.files && fileInput.files[0]) {
+                const file = fileInput.files[0];
+                return new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        const base64String = e.target.result.split(',')[1];
+                        resolve({
+                            base64: base64String,
+                            mimeType: file.type
+                        });
+                    };
+                    reader.onerror = reject;
+                    reader.readAsDataURL(file);
+                });
+            }
+            return undefined;
+        }
 
         async function generateCode() {
             const startTime = performance.now();
 
             const input = document.getElementById('input').value;
-            const imageUrl = document.getElementById('imageInput').value;
+            if (!input.trim()) {
+                showStatus('Please enter a description', 'error');
+                return;
+            }
+
+            const imageData = await getImageData();
             const output = document.getElementById('output');
             const status = document.getElementById('status');
             const generateButton = document.getElementById('generateButton');
             const topicName = document.getElementById('topicName');
             const messagesContainer = document.getElementById('messagesContainer');
 
-            // Reset metrics
             document.getElementById('totalTime').textContent = '-';
-
-            if (!input.trim()) {
-                showStatus('Please enter a description', 'error');
-                return;
-            }
 
             try {
                 generateButton.disabled = true;
@@ -125,7 +237,7 @@
                     },
                     body: JSON.stringify({
                         textInput: input,
-                        imageInput: imageUrl || undefined,
+                        imageInput: imageData,
                         previousMessages: previousMessages,
                         topicName: needTopicName,
                     })
@@ -138,12 +250,10 @@
                     throw new Error(data.error);
                 }
 
-                // Update performance metrics
                 const totalTime = endTime - startTime;
                 document.getElementById('totalTime').textContent =
                     `${totalTime.toFixed(2)}ms (${(totalTime / 1000).toFixed(2)}s)`;
 
-                // Update messages display with timing info
                 previousMessages.push([
                     {
                         role: 'user',
@@ -157,20 +267,20 @@
 
                 messagesContainer.innerHTML = previousMessages
                     .map((exchange, index) => `
-                    <div class="border rounded-lg p-4">
-                        <div class="mb-2">
-                            <strong>User ${index + 1}:</strong>
-                            <pre class="bg-gray-50 p-2 rounded mt-1">${exchange[0].content[0].text}</pre>
-                        </div>
-                        <div>
-                            <strong>Assistant ${index + 1}:</strong>
-                            <pre class="bg-gray-50 p-2 rounded mt-1">${typeof exchange[1].content === 'string'
+                        <div class="border rounded-lg p-4">
+                            <div class="mb-2">
+                                <strong>User ${index + 1}:</strong>
+                                <pre class="bg-gray-50 p-2 rounded mt-1">${exchange[0].content[0].text}</pre>
+                            </div>
+                            <div>
+                                <strong>Assistant ${index + 1}:</strong>
+                                <pre class="bg-gray-50 p-2 rounded mt-1">${typeof exchange[1].content === 'string'
                             ? exchange[1].content.substring(0, 100) + '...'
                             : 'Complex content'
                         }</pre>
+                            </div>
                         </div>
-                    </div>
-                `)
+                    `)
                     .join('');
 
                 output.textContent = data.code;
@@ -212,10 +322,23 @@
             document.getElementById('topicName').textContent = 'Generate UI Component';
             showStatus('Conversation cleared', 'success');
         }
+
+        // Initial setup
+        document.addEventListener('DOMContentLoaded', function () {
+            // Get elements
+            const imageInput = document.getElementById('imageInput');
+            const fileInput = document.getElementById('fileInput');
+            const imagePreview = document.getElementById('imagePreview');
+            let needTopicName = true;
+            let previousMessages = [];
+
+            // Set initial state
+            document.querySelector('input[name="useImage"][value="yes"]').checked = true;
+            toggleImageSection();
+            updateImagePreview();
+        });
     </script>
 </body>
-
-</html>
 
 <style>
     #metrics {
@@ -229,3 +352,5 @@
         border-radius: 0.25em;
     }
 </style>
+
+</html>
