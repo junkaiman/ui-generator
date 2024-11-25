@@ -1,3 +1,4 @@
+// src/app/api/generate/route.ts
 import { generateMessages, generatePromptRevisionMessages} from '@/server/prompts';
 import { GenerateRequest, Message } from '@/lib/types';
 import { MODEL } from '@/server/constants';
@@ -27,7 +28,6 @@ export const maxDuration = 30;
 
 export async function POST(req: Request) {
     const host = req.headers.get('host');
-    // remove if condition if want to test ratelimiter on localhost
     if (host && !(host.startsWith('localhost') || host.startsWith('127.0.0.1'))) {
         const result = await ratelimit.limit(req.headers.get("x-forwarded-for") as string);
         if (!result.success) {
@@ -49,6 +49,16 @@ export async function POST(req: Request) {
             );
         }
 
+        // Validate base64 image if provided
+        if (input.imageInput && typeof input.imageInput === 'object') {
+            if (!input.imageInput.base64 || !input.imageInput.mimeType) {
+                return new Response(
+                    JSON.stringify({ error: 'Invalid base64 image format' }),
+                    { status: 400 }
+                );
+            }
+        }
+
         // First, get the refined prompt
         const revisionMessages = generatePromptRevisionMessages(
             input.textInput,
@@ -61,19 +71,16 @@ export async function POST(req: Request) {
             messages: transformMessages(revisionMessages),
         });
 
-        const {refinedPrompt, topicName}  = refinedPromptCompletion.choices[0].message.content 
-                                            ? extractRefinedPromptAndTitle(refinedPromptCompletion.choices[0].message.content, input.textInput)
-                                            : {refinedPrompt: input.textInput, topicName: 'React UI Component Code generation.'};
-        // console.log(revisionMessages);
-        // console.log(refinedPromptCompletion.choices[0])
+        const {refinedPrompt, topicName} = refinedPromptCompletion.choices[0].message.content 
+            ? extractRefinedPromptAndTitle(refinedPromptCompletion.choices[0].message.content, input.textInput)
+            : {refinedPrompt: input.textInput, topicName: 'React UI Component Code generation.'};
 
         // Use the refined prompt to generate the component
         const messages = generateMessages(
-            refinedPrompt, // Use refined prompt instead of original textInput
+            refinedPrompt,
             input.imageInput,
             input.previousMessages,
         );
-        //console.log("messages: ",messages)
 
         const completion = await openai.chat.completions.create({
             model: MODEL,
@@ -87,8 +94,8 @@ export async function POST(req: Request) {
         return new Response(
             JSON.stringify({
                 code,
-                topicName: input.topicName? topicName: undefined,
-                refinedPrompt, // Optional: Include the refined prompt in response
+                topicName: input.topicName ? topicName : undefined,
+                refinedPrompt,
             }),
             {
                 status: 200,

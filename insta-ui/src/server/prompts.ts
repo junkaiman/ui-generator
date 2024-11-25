@@ -1,8 +1,9 @@
+// src/server/ prompts.ts 
 import { Message, Messages, TextContent, ImageContent } from '@/lib/types'
 
 export function generateMessages(
     textInput: string,
-    imageInput?: string,
+    imageInput?: string | { base64: string; mimeType: string },
     previousMessages?: Messages[]
 ): Message[] {
     const messages: Message[] = [
@@ -54,10 +55,14 @@ export function generateMessages(
 
 
     if (imageInput) {
+        const imageUrl = typeof imageInput === 'string' 
+            ? imageInput 
+            : `data:${imageInput.mimeType};base64,${imageInput.base64}`;
+
         userContent.push({
             type: 'image_url',
             image_url: {
-                url: imageInput
+                url: imageUrl
             }
         } as ImageContent);
     }
@@ -72,10 +77,10 @@ export function generateMessages(
 
 export function generatePromptRevisionMessages(
     textInput: string, 
-    imageInput?: string,
+    imageInput?: string | { base64: string; mimeType: string },
     previousMessages?: Messages[]
 ): Message[] {
-    return [
+    const messages: Message[] = [
         {
             role: 'system',
             content: `You are a prompt engineer specializing in UI component generation.
@@ -94,21 +99,35 @@ export function generatePromptRevisionMessages(
             - "refined_prompt": The improved detailed prompt.
             - "title": The concise title.`
         },
-        ...(previousMessages?.slice(-2).flat() || []), // Add recent conversation context
+        ...(previousMessages?.slice(-2).flat() || [])
+    ];
+
+    const userContent: (TextContent | ImageContent)[] = [
         {
-            role: 'user',
-            content: [
-                {
-                    type: 'text',
-                    text: previousMessages?.length 
-                        ? `Refine this component request and include a title, considering our previous conversation and iterations: ${textInput}`
-                        : `Refine this component request into a detailed prompt and include a title: ${textInput}`
-                },
-                ...(imageInput ? [{
-                    type: 'image_url',
-                    image_url: { url: imageInput }
-                } as ImageContent] : [])
-            ]
+            type: 'text',
+            text: previousMessages?.length 
+                ? `Refine this component request and include a title, considering our previous conversation and iterations: ${textInput}`
+                : `Refine this component request into a detailed prompt and include a title: ${textInput}`
         }
     ];
+
+    if (imageInput) {
+        const imageUrl = typeof imageInput === 'string' 
+            ? imageInput 
+            : `data:${imageInput.mimeType};base64,${imageInput.base64}`;
+
+        userContent.push({
+            type: 'image_url',
+            image_url: {
+                url: imageUrl
+            }
+        } as ImageContent);
+    }
+
+    messages.push({
+        role: 'user',
+        content: userContent
+    });
+
+    return messages;
 }

@@ -27,7 +27,7 @@ type Messages = Message[];
 
 interface GenerateRequest {
   textInput: string;
-  imageInput?: string;
+  imageInput?: string | { base64: string; mimeType: string; };
   previousMessages?: Messages[];
   topicName: boolean;
 }
