@@ -74,14 +74,14 @@ export default function ChatInterface() {
     } else {
       // support image input
       res = await fetchAIResponse(
-        "Generate an UI based on the provided image",
+        "Implement the user interface shown in the provided image in react code",
         (lastMsg.content[0] as ImageContent).image_url.url,
         prevMsgs,
         isFirstMsg
       );
     }
     setIsLoading(false);
-        
+
     if (res) {
       const resJson = await res.json();
       const aiResponse: Message = {
