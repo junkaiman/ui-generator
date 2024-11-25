@@ -5,6 +5,7 @@ import { getChatById, updateChat } from "@/lib/db";
 import { fetchAIResponse } from "@/app/api/generate/utils";
 import * as router from "next/navigation"; // 假設 useSearchParams 來自 next/navigation
 import "@testing-library/jest-dom";
+import { cleanup } from "@testing-library/react";
 
 jest.mock("../src/lib/db", () => ({
   getChatById: jest.fn(),
@@ -27,37 +28,46 @@ Object.defineProperty(HTMLElement.prototype, 'scrollIntoView', {
   });
 
 describe("ChatInterface", () => {
-  const mockChat = {
-    id: "1",
+  let chatId = 1;
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    chatId += 1;
+  });
+
+  afterEach(() => {
+    cleanup(); 
+  });
+
+  const createMockChat = () => ({
+    id: chatId.toString(),
     messages: [
       { role: "user", content: "Hello!" },
       { role: "assistant", content: "Hi! How can I assist you today?" },
     ],
-  };
-
-  beforeEach(() => {
-    jest.clearAllMocks();
   });
 
   it("should fetch and render chat messages", async () => {
-    (getChatById as jest.Mock).mockResolvedValue(mockChat);
+    (getChatById as jest.Mock).mockResolvedValue(createMockChat());
 
-    render(<ChatInterface />);
+    const { unmount } = render(<ChatInterface />);
 
     await waitFor(() => {
       expect(getChatById).toHaveBeenCalledWith("1");
       expect(screen.getByText("Hello!")).toBeInTheDocument();
       expect(screen.getByText("Hi! How can I assist you today?")).toBeInTheDocument();
     });
+
+    unmount();
   });
 
   it("should send a new message and update the chat", async () => {
-    (getChatById as jest.Mock).mockResolvedValue(mockChat);
+    (getChatById as jest.Mock).mockResolvedValue(createMockChat());
     // (fetchAIResponse as jest.Mock).mockResolvedValue({
     //   json: jest.fn().mockResolvedValue({ code: "Sure, I can help with that!" }),
     // });
 
-    render(<ChatInterface />);
+    const { unmount } = render(<ChatInterface />);
 
     // Send a new message
     const input = screen.getByPlaceholderText("Type your message...");
@@ -70,13 +80,15 @@ describe("ChatInterface", () => {
       expect(updateChat).toHaveBeenCalled();
       expect(screen.getByText("Can you help me?")).toBeInTheDocument();
     });
+
+    unmount();
   });
 
   it("should handle image upload", async () => {
-    (getChatById as jest.Mock).mockResolvedValue(mockChat);
+    (getChatById as jest.Mock).mockResolvedValue(createMockChat());
 
     const file = new File(["dummy image"], "example.png", { type: "image/png" });
-    render(<ChatInterface />);
+    const { unmount } = render(<ChatInterface />);
 
     const uploadLabel = screen.getByText((content, element) => {
         return (
@@ -93,20 +105,22 @@ describe("ChatInterface", () => {
     await waitFor(() => {
       expect(updateChat).toHaveBeenCalled();
     });
+
+    unmount();
   });
 
   it("should handle modifying a message", async () => {
-    (getChatById as jest.Mock).mockResolvedValue(mockChat);
+    (getChatById as jest.Mock).mockResolvedValue(createMockChat());
 
-    render(<ChatInterface />);
+    const { unmount } = render(<ChatInterface />);
 
     await waitFor(() => {
       expect(screen.getByText("Hello!")).toBeInTheDocument();
     });
 
     // Simulate modify
-    const editButton = screen.getByText("Edit");
-    fireEvent.click(editButton);
+    const editButtons = screen.getAllByText("Edit");
+    fireEvent.click(editButtons[0]);
 
     const textarea = screen.getByText("Hello!");
     fireEvent.change(textarea, { target: { value: "Hello, edited!" } });
@@ -118,16 +132,18 @@ describe("ChatInterface", () => {
       expect(updateChat).toHaveBeenCalled();
       expect(screen.getByText("Hello, edited!")).toBeInTheDocument();
     });
+
+    unmount();
   });
 
   it("should regenerate assistant's response", async () => {
-    (getChatById as jest.Mock).mockResolvedValue(mockChat);
+    (getChatById as jest.Mock).mockResolvedValue(createMockChat());
     (fetchAIResponse as jest.Mock).mockResolvedValue({
       json: jest.fn().mockResolvedValue({ code: "New response from AI" }),
     });
     (updateChat as jest.Mock).mockResolvedValue(undefined); // Mock updateChat 返回一个 Promise
   
-    render(<ChatInterface />);
+    const { unmount } = render(<ChatInterface />);
   
     await waitFor(() => {
       expect(screen.getByText("Hi! How can I assist you today?")).toBeInTheDocument();
@@ -140,5 +156,7 @@ describe("ChatInterface", () => {
       expect(fetchAIResponse).toHaveBeenCalled();
       expect(screen.getByText("New response from AI")).toBeInTheDocument();
     });
+
+    unmount();
   });
 });
