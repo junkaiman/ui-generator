@@ -3,7 +3,6 @@ import { render, fireEvent, screen, waitFor } from "@testing-library/react";
 import ChatInterface from "@/components/ChatInterface";
 import { getChatById, updateChat } from "@/lib/db";
 import { fetchAIResponse } from "@/app/api/generate/utils";
-import * as router from "next/navigation"; // 假設 useSearchParams 來自 next/navigation
 import "@testing-library/jest-dom";
 import { cleanup } from "@testing-library/react";
 
