@@ -1,5 +1,5 @@
 import {render, screen, fireEvent} from "@testing-library/react";
-import SideBarItem from "../src/components/SideBar/SideBarItem.tsx";
+import SideBarItem from "../../src/components/SideBar/SideBarItem.tsx";
 
 describe("SideBarItem", () => {
   const mockChatId = "123";
