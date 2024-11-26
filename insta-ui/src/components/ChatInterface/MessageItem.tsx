@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Message, TextContent, ImageContent } from "../../lib/types";
 import SyntaxHighlighter from "react-syntax-highlighter";
-import { dracula } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import { dracula } from 'react-syntax-highlighter/dist/cjs/styles/prism';
 import Modal from "react-modal";
 import "./ChatInterface.css";
 

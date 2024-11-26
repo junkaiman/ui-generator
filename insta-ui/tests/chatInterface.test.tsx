@@ -26,7 +26,7 @@ Object.defineProperty(HTMLElement.prototype, 'scrollIntoView', {
     value: jest.fn(),
   });
 
-describe.skip("ChatInterface", () => {
+describe("ChatInterface", () => {
   let chatId = 1;
 
   beforeEach(() => {
@@ -138,7 +138,7 @@ describe.skip("ChatInterface", () => {
   it("should regenerate assistant's response", async () => {
     (getChatById as jest.Mock).mockResolvedValue(createMockChat());
     (fetchAIResponse as jest.Mock).mockResolvedValue({
-      json: jest.fn().mockResolvedValue({ code: "New response from AI" }),
+      json: jest.fn().mockResolvedValue({ code: "<p>Hello World</p>" }),
     });
     (updateChat as jest.Mock).mockResolvedValue(undefined); // Mock updateChat 返回一个 Promise
   
@@ -153,7 +153,7 @@ describe.skip("ChatInterface", () => {
   
     await waitFor(() => {
       expect(fetchAIResponse).toHaveBeenCalled();
-      expect(screen.getByText("New response from AI")).toBeInTheDocument();
+      expect(screen.getByText("<p>Hello World</p>")).toBeInTheDocument();
     });
 
     unmount();
