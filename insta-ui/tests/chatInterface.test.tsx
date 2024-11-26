@@ -3,7 +3,6 @@ import { render, fireEvent, screen, waitFor } from "@testing-library/react";
 import ChatInterface from "@/components/ChatInterface";
 import { getChatById, updateChat } from "@/lib/db";
 import { fetchAIResponse } from "@/app/api/generate/utils";
-import * as router from "next/navigation"; // 假設 useSearchParams 來自 next/navigation
 import "@testing-library/jest-dom";
 import { cleanup } from "@testing-library/react";
 
@@ -139,7 +138,7 @@ describe("ChatInterface", () => {
   it("should regenerate assistant's response", async () => {
     (getChatById as jest.Mock).mockResolvedValue(createMockChat());
     (fetchAIResponse as jest.Mock).mockResolvedValue({
-      json: jest.fn().mockResolvedValue({ code: "New response from AI" }),
+      json: jest.fn().mockResolvedValue({ code: "<p>Hello World</p>" }),
     });
     (updateChat as jest.Mock).mockResolvedValue(undefined); // Mock updateChat 返回一个 Promise
   
@@ -154,7 +153,7 @@ describe("ChatInterface", () => {
   
     await waitFor(() => {
       expect(fetchAIResponse).toHaveBeenCalled();
-      expect(screen.getByText("New response from AI")).toBeInTheDocument();
+      expect(screen.getByText("<p>Hello World</p>")).toBeInTheDocument();
     });
 
     unmount();

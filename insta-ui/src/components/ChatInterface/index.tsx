@@ -72,13 +72,20 @@ export default function ChatInterface() {
         isFirstMsg
       );
     } else {
-      // TODO: support image input
+      // support image input
+      const textPrompt = `Implement the user interface shown in the provided image in react code 
+                          with exactly the same functionalities and styles`;
+      res = await fetchAIResponse(
+        textPrompt,
+        (lastMsg.content[0] as ImageContent).image_url.url,
+        prevMsgs,
+        isFirstMsg
+      );
     }
     setIsLoading(false);
 
     if (res) {
       const resJson = await res.json();
-
       const aiResponse: Message = {
         role: "assistant",
         content: resJson.code,
