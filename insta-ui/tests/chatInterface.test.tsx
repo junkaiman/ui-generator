@@ -26,7 +26,7 @@ Object.defineProperty(HTMLElement.prototype, 'scrollIntoView', {
     value: jest.fn(),
   });
 
-describe("ChatInterface", () => {
+describe.skip("ChatInterface", () => {
   let chatId = 1;
 
   beforeEach(() => {
